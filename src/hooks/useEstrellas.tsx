@@ -46,13 +46,23 @@ export const useEstrellas = () => {
         setIsLoading(false)
     }
 
+    const deleteModel = async( selectModel: ModelResponse ) => {
+
+        const { model, id } = selectModel
+
+        await estrellasApi.delete<any, any, any>( `/models/${ id }.json`, model )
+
+        return { ok: true }
+    }
+
     useEffect(() => {
         getEstrellas();
       }, []);
 
   return {
     ...stateEstrellas,
-    isLoading
+    isLoading,
+    deleteModel,
   }
 }
 
