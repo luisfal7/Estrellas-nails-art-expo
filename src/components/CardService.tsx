@@ -1,7 +1,8 @@
-import React from "react";
+import React,{ useContext } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { Button, Icon } from "@rneui/themed";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
+import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
 
 interface Props {
   service: ServiceResponse;
@@ -11,6 +12,9 @@ interface Props {
 const windowWidth = Dimensions.get("window").width;
 
 export const CardService = ({ service, index }: Props) => {
+
+  const {deleteService} = useContext(ApiEstrellaContext)
+
   return (
     <View style={styles.containerCard}>
       <View style={styles.container}>
@@ -24,7 +28,7 @@ export const CardService = ({ service, index }: Props) => {
           <Button radius={"md"} type="clear" onPress={() => {}}>
             <Icon name="create-outline" type="ionicon" color="gray" />
           </Button>
-          <Button radius={"md"} type="clear" onPress={() => {}}>
+          <Button radius={"md"} type="clear" onPress={() => {deleteService(service)}}>
             <Icon name="trash-outline" type="ionicon" color="gray" />
           </Button>
         </View>
@@ -37,16 +41,9 @@ const styles = StyleSheet.create({
   containerCard: {
     flex: 1,
     borderRadius: 10,
+    borderWidth: 1,
     padding: 5,
     margin: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 4,
   },
   container: {
     flex: 1,

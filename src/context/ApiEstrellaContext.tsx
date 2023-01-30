@@ -13,6 +13,7 @@ interface apiEstrellaContextProps {
   deleteModel: (selectModel: ModelResponse) => void;
   getClients: () => void;
   getServices: () => void;
+  deleteService: (selectService: ServiceResponse) => void;
 }
 
 const initialState: ApiEstrellaState = {
@@ -74,6 +75,19 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const deleteService = async(selectService: ServiceResponse) => {
+    try {
+      const { service, precio } = selectService;
+      const dataToSave = { service, precio }
+      await estrellasApi.delete<ServiceResponse>(
+        `/services/${selectService.id}.json`,
+        dispatch({ type: "delete_service", payload: dataToSave.service })
+      );
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -82,6 +96,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         deleteModel,
         getClients,
         getServices,
+        deleteService,
       }}
     >
       {children}
