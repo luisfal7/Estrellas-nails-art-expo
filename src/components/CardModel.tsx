@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { Card, Button, Icon } from "@rneui/themed";
 import { ModelResponse } from "../interfaces/ModelResponse";
-import { useEstrellas } from '../hooks/useEstrellas';
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
 
 interface Props {
@@ -12,8 +11,7 @@ interface Props {
 
 export const CardModel = ({ model, index }: Props) => {
 
-  const { deleteModel } = useEstrellas()
-  const {getModels} = useContext(ApiEstrellaContext)
+  const {deleteModel} = useContext(ApiEstrellaContext)
 
   return (
     <View style={ styles.container }>
@@ -25,7 +23,7 @@ export const CardModel = ({ model, index }: Props) => {
       />
       <View style={styles.containerBtn}>
         <Text style={ styles.index }>{index + 1 }</Text>
-        <Button radius={"md"} type="clear" onPress={() => {}}> 
+        <Button radius={"md"} type="clear" onPress={() => { deleteModel(model) }}>
           <Icon name="trash-outline" type="ionicon" color="gray" />
         </Button>
       </View>

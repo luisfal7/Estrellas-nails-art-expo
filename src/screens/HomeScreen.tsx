@@ -1,5 +1,5 @@
-import React, { useContext } from 'react'
-import { View, Text } from 'react-native';
+import React, { useContext, useEffect } from 'react'
+import { View, Text, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
 
@@ -7,13 +7,19 @@ export const HomeScreen = () => {
 
   const navigation = useNavigation();
 
-  const { models } = useContext(ApiEstrellaContext)
+  const { models, clients, getClients, getServices, services } = useContext(ApiEstrellaContext)
+
+  useEffect(()=>{
+    getServices()
+  },[])
   
   return (
-    <View>
-      <Text>
-        { JSON.stringify( models, null, 3 ) }
-      </Text>
-    </View>
+    <ScrollView>
+      <View>
+        <Text>
+          { JSON.stringify( services, null, 3 ) }
+        </Text>
+      </View>
+    </ScrollView>
   )
 }

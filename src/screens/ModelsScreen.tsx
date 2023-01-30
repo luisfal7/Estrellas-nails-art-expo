@@ -26,7 +26,7 @@ export const ModelsScreen = () => {
         renderItem={({ item, index }) => (
           <CardModel model={item} index={index} />
         )}
-        style={styles.ListModels}
+        style={styles.listModels}
       />
     </View>
   );
@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     padding: 20,
   },
-  ListModels: {
+  listModels: {
     alignSelf: "center",
+    marginBottom: 100
   },
 });
