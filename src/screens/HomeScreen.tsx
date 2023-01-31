@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   FlatList,
+  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
@@ -32,6 +33,10 @@ export const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar
+        animated={true}
+        backgroundColor={colors.background}
+      />
       <View style={styles.containerData}>
         <CardData title="Ingresos Totales" total={servicesTotal} />
         <CardData title="Gastos Totales" total={0} />
