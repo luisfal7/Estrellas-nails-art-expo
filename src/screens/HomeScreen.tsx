@@ -14,6 +14,7 @@ import { CardClient } from "../components/CardClient";
 import { useTheme } from "@react-navigation/native";
 
 export const HomeScreen = () => {
+
   const navigation = useNavigation();
   const { colors } = useTheme();
 
@@ -47,6 +48,7 @@ export const HomeScreen = () => {
             size: 25,
           }}
           title="Modelo"
+          onPress={() => navigation.navigate('AddModelScreen') }
         />
         <Button
           radius={"md"}
@@ -59,6 +61,7 @@ export const HomeScreen = () => {
             size: 25,
           }}
           title="Servicio"
+          onPress={() => navigation.navigate('AddServiceScreen') }
         />
       </View>
       <View>
