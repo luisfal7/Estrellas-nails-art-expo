@@ -1,5 +1,5 @@
 import React,{ useContext } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, Alert } from "react-native";
 import { Button, Icon } from "@rneui/themed";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
@@ -15,6 +15,16 @@ export const CardService = ({ service, index }: Props) => {
 
   const {deleteService} = useContext(ApiEstrellaContext)
 
+  const AlertDeleteService = () => {
+    Alert.alert('¿Desea borrar el servicio?', 'Al seleccionar "OK" el servicio se borrará permanentemente.', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => deleteService(service)},
+  ])}
+
   return (
     <View style={styles.containerCard}>
       <View style={styles.container}>
@@ -28,7 +38,7 @@ export const CardService = ({ service, index }: Props) => {
           <Button radius={"md"} type="clear" onPress={() => {}}>
             <Icon name="create-outline" type="ionicon" color="gray" />
           </Button>
-          <Button radius={"md"} type="clear" onPress={() => {deleteService(service)}}>
+          <Button radius={"md"} type="clear" onPress={AlertDeleteService}>
             <Icon name="trash-outline" type="ionicon" color="gray" />
           </Button>
         </View>
@@ -40,6 +50,7 @@ export const CardService = ({ service, index }: Props) => {
 const styles = StyleSheet.create({
   containerCard: {
     flex: 1,
+    backgroundColor:'white',
     borderRadius: 10,
     borderWidth: 1,
     padding: 5,

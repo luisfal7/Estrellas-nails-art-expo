@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Alert } from "react-native";
 import { Card, Button, Icon } from "@rneui/themed";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
@@ -13,6 +13,16 @@ export const CardModel = ({ model, index }: Props) => {
 
   const {deleteModel} = useContext(ApiEstrellaContext)
 
+  const AlertDeleteModel = () => {
+    Alert.alert('¿Desea borrar el modelo?', 'Al seleccionar "OK" el modelo se borrará permanentemente.', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => deleteModel(model)},
+  ])}
+
   return (
     <View style={ styles.container }>
       <Card.Image
@@ -23,7 +33,7 @@ export const CardModel = ({ model, index }: Props) => {
       />
       <View style={styles.containerBtn}>
         <Text style={ styles.index }>{index + 1 }</Text>
-        <Button radius={"md"} type="clear" onPress={() => { deleteModel(model) }}>
+        <Button radius={"md"} type="clear" onPress={ AlertDeleteModel }>
           <Icon name="trash-outline" type="ionicon" color="gray" />
         </Button>
       </View>
