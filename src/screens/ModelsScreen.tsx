@@ -12,7 +12,7 @@ import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
 
 export const ModelsScreen = () => {
   const { top } = useSafeAreaInsets();
-  const { getModels, models } = useContext(ApiEstrellaContext);
+  const { getModels, models, isLoading } = useContext(ApiEstrellaContext);
 
   useEffect(() => {
     getModels()
@@ -20,14 +20,22 @@ export const ModelsScreen = () => {
 
   return (
     <View style={{ ...styles.container, top: top + 10 }}>
-      <Text style={styles.title}>Lista de Modelos</Text>
-      <FlatList
-        data={models}
-        renderItem={({ item, index }) => (
-          <CardModel model={item} index={index} />
-        )}
-        style={styles.listModels}
-      />
+      {
+        isLoading ? 
+        <ActivityIndicator /> :
+        (
+          <View>
+            <Text style={styles.title}>Lista de Modelos</Text>
+            <FlatList
+              data={models}
+              renderItem={({ item, index }) => (
+                <CardModel model={item} index={index} />
+              )}
+              style={styles.listModels}
+            />
+          </View>
+        )
+      }
     </View>
   );
 };

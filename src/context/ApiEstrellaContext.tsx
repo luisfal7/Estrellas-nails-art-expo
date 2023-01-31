@@ -9,6 +9,7 @@ interface apiEstrellaContextProps {
   models: ModelResponse[];
   clients: ClientResponse[];
   services: ServiceResponse[];
+  isLoading: boolean;
   getModels: () => void;
   deleteModel: (selectModel: ModelResponse) => void;
   getClients: () => void;
@@ -20,6 +21,7 @@ const initialState: ApiEstrellaState = {
   models: [],
   clients: [],
   services: [],
+  isLoading: true,
 };
 
 export const ApiEstrellaContext = createContext({} as apiEstrellaContextProps);

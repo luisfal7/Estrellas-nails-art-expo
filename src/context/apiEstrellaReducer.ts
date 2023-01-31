@@ -6,6 +6,7 @@ export interface ApiEstrellaState {
     models: ModelResponse[];
     clients: ClientResponse[];
     services: ServiceResponse[];
+    isLoading: boolean;
 }
 
 type ApiEstrellaAction =
@@ -19,13 +20,13 @@ export const apiEstrellaReducer = (state: ApiEstrellaState, action: ApiEstrellaA
 
     switch (action.type) {
         case 'get_models':
-            return {...state, models: action.payload}
+            return {...state, models: action.payload, isLoading: false}
 
         case 'delete_model':
             return {...state, models: state.models.filter(e => e.model !== action.payload)}
         
         case 'get_clients':
-            return {...state, clients: action.payload}
+            return {...state, clients: action.payload, isLoading: false}
 
         case 'get_services':
             return {...state, services: action.payload}

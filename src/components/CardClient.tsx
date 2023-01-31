@@ -1,11 +1,13 @@
 import React from "react";
 import { Card, Button, Text } from "@rneui/themed";
 import { ClientResponse } from "../interfaces/ClientResponse";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Dimensions } from 'react-native';
 
 interface Props {
   client: ClientResponse;
 }
+
+const windowWidth = Dimensions.get("window").width;
 
 export const CardClient = ({ client }: Props) => {
   return (
@@ -32,6 +34,8 @@ export const CardClient = ({ client }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
+    width:windowWidth * 0.85,
+    alignSelf:'center',
     backgroundColor: "white",
     borderRadius: 15,
     shadowColor: "#000",
