@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Button, Text } from "@rneui/themed";
 import { ClientResponse } from "../interfaces/ClientResponse";
 import { StyleSheet, View, Dimensions } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 interface Props {
   client: ClientResponse;
@@ -10,8 +11,11 @@ interface Props {
 const windowWidth = Dimensions.get("window").width;
 
 export const CardClient = ({ client }: Props) => {
+
+  const { colors } = useTheme();
+
   return (
-    <Card containerStyle={styles.container}>
+    <Card containerStyle={{...styles.container, backgroundColor:colors.card}}>
       <View style={styles.title}>
         <Card.Title>{client.name}</Card.Title>
         <Card.Title>

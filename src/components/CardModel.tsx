@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Alert } from "react-native";
 import { Card, Button, Icon } from "@rneui/themed";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
+import { useTheme } from '@react-navigation/native';
 
 interface Props {
   model: ModelResponse;
@@ -12,6 +13,8 @@ interface Props {
 export const CardModel = ({ model, index }: Props) => {
 
   const {deleteModel} = useContext(ApiEstrellaContext)
+
+  const { colors } = useTheme();
 
   const AlertDeleteModel = () => {
     Alert.alert('¿Desea borrar el modelo?', 'Al seleccionar "OK" el modelo se borrará permanentemente.', [
@@ -24,7 +27,7 @@ export const CardModel = ({ model, index }: Props) => {
   ])}
 
   return (
-    <View style={ styles.container }>
+    <View style={{ ...styles.container, backgroundColor: colors.card }}>
       <Card.Image
         style={styles.image}
         source={{

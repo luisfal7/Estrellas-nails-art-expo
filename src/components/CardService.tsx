@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, Alert } from "react-native";
 import { Button, Icon } from "@rneui/themed";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
+import { useTheme } from '@react-navigation/native';
 
 interface Props {
   service: ServiceResponse;
@@ -14,6 +15,7 @@ const windowWidth = Dimensions.get("window").width;
 export const CardService = ({ service, index }: Props) => {
 
   const {deleteService} = useContext(ApiEstrellaContext)
+  const { colors } = useTheme();
 
   const AlertDeleteService = () => {
     Alert.alert('¿Desea borrar el servicio?', 'Al seleccionar "OK" el servicio se borrará permanentemente.', [
@@ -26,7 +28,7 @@ export const CardService = ({ service, index }: Props) => {
   ])}
 
   return (
-    <View style={styles.containerCard}>
+    <View style={{...styles.containerCard, backgroundColor: colors.card}}>
       <View style={styles.container}>
         <View style={styles.containerText}>
           <Text style={styles.title}>

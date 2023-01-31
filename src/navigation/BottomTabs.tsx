@@ -4,10 +4,14 @@ import { ModelsScreen } from "../screens/ModelsScreen";
 import { Navigator } from "./Navigator";
 import { ClientsScreen } from "../screens/ClientsScreen";
 import { ServicesScreen } from '../screens/ServicesScreen';
+import { useTheme } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 export const BottomTabs = () => {
+
+  const { colors } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -16,7 +20,7 @@ export const BottomTabs = () => {
     >
       <Tab.Screen
         options={{
-          tabBarIcon: () => <Icon name="home-outline" color="gray" size={25} />,
+          tabBarIcon: () => <Icon name="home-outline" color={colors.primary} size={25} />,
         }}
         name="Inicio"
         component={Navigator}
@@ -24,7 +28,7 @@ export const BottomTabs = () => {
       <Tab.Screen
         options={{
           tabBarIcon: () => (
-            <Icon name="color-palette-outline" color="gray" size={25} />
+            <Icon name="color-palette-outline" color={colors.primary} size={25} />
           ),
         }}
         name="Modelos"
@@ -33,7 +37,7 @@ export const BottomTabs = () => {
       <Tab.Screen
         options={{
           tabBarIcon: () => (
-            <Icon name="people-outline" color="gray" size={25} />
+            <Icon name="people-outline" color={colors.primary} size={25} />
           ),
         }}
         name="Clientes"
@@ -42,7 +46,7 @@ export const BottomTabs = () => {
       <Tab.Screen
         options={{
           tabBarIcon: () => (
-            <Icon name="reader-outline" color="gray" size={25} />
+            <Icon name="reader-outline" color={colors.primary} size={25} />
           ),
         }}
         name="Servicios"
