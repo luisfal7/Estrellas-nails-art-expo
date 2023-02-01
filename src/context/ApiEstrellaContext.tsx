@@ -13,9 +13,10 @@ interface apiEstrellaContextProps {
   getModels: () => void;
   deleteModel: (selectModel: ModelResponse) => void;
   getClients: () => void;
+  deleteClient: (selectClient: ClientResponse) => void;
   getServices: () => void;
   deleteService: (selectService: ServiceResponse) => void;
-  addService: (newService: AddService ) => any;
+  addService: (newService: ServiceResponse ) => any;
 }
 
 const initialState: ApiEstrellaState = {
@@ -66,6 +67,18 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const deleteClient = async(selectClient: ClientResponse) => {
+    try {
+      const { id } = selectClient;
+      await estrellasApi.delete<ClientResponse>(
+        `/clients/${id}.json`,
+        dispatch({ type: "delete_client", payload: id })
+      );
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   const getServices = async () => {
     try {
       const services = await estrellasApi.get<ServiceResponse>("/services.json");
@@ -91,7 +104,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const addService = async( newService: AddService ) => {
+  const addService = async( newService: ServiceResponse ) => {
     try {
       
       const { data } = await estrellasApi.get(`/services.json`)
@@ -124,6 +137,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         getModels,
         deleteModel,
         getClients,
+        deleteClient,
         getServices,
         deleteService,
         addService,

@@ -1,8 +1,9 @@
-import React from "react";
-import { Card, Button, Text } from "@rneui/themed";
-import { ClientResponse } from "../interfaces/ClientResponse";
-import { StyleSheet, View, Dimensions } from 'react-native';
+import React, { useContext } from "react";
+import { StyleSheet, View, Dimensions, Alert } from 'react-native';
 import { useTheme } from '@react-navigation/native';
+import { Card, Button, Text, Icon } from "@rneui/themed";
+import { ClientResponse } from "../interfaces/ClientResponse";
+import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
 
 interface Props {
   client: ClientResponse;
@@ -13,6 +14,18 @@ const windowWidth = Dimensions.get("window").width;
 export const CardClient = ({ client }: Props) => {
 
   const { colors } = useTheme();
+
+  const { deleteClient } = useContext(ApiEstrellaContext)
+
+  const AlertDeleteClient = () => {
+    Alert.alert('¿Desea borrar el cliente?', 'Al seleccionar "OK" el cliente se borrará permanentemente.', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => deleteClient(client)},
+  ])}
 
   return (
     <Card containerStyle={{...styles.container, backgroundColor:colors.card}}>
@@ -29,9 +42,14 @@ export const CardClient = ({ client }: Props) => {
           <Text style={styles.servicePrecio}>{e.precio}$</Text>
         </View>
       ))}
-      <Text style={styles.id}>
-        {client.email} | {client.id}
-      </Text>
+      <View style={ styles.footer }>
+        <Text style={styles.id}>
+          {client.email} | {client.id} |
+        </Text>
+        <Button radius={"md"} type="clear" size="sm" onPress={AlertDeleteClient}>
+            <Icon name="trash-outline" type="ionicon" color="gray" size={18} />
+        </Button>
+      </View>
     </Card>
   );
 };
@@ -59,7 +77,7 @@ const styles = StyleSheet.create({
   id: {
     fontSize: 10,
     color: "gray",
-    alignSelf: "flex-end",
+    alignSelf:'center'
   },
   containerService: {
     flex: 1,
@@ -80,4 +98,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
+  footer:{
+    flexDirection:'row',
+    justifyContent:'flex-end'
+  }
 });

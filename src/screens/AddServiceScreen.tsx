@@ -4,11 +4,8 @@ import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import { Card, Button } from "@rneui/themed";
 import { Formik } from "formik";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
+import { ServiceResponse } from '../interfaces/ServiceResponse';
 
-interface Props {
-  service: string;
-  precio: string;
-}
 
 export const AddServiceScreen = () => {
   const { colors } = useTheme();
@@ -25,7 +22,7 @@ export const AddServiceScreen = () => {
               precio: /^\d{1,6}$/, // 1 a 6 numeros.
             };
 
-            const errors = {} as Props;
+            const errors = {} as ServiceResponse;
 
             if (!expresiones.nombre.test(values.service))
               errors.service = "Debe ingresar un servicio valido";
