@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { useTheme } from "@react-navigation/native";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import { Card, Button } from "@rneui/themed";
 import { Formik } from "formik";
+import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
 
 interface Props { 
-  newService: string, 
+  service: string, 
   precio: string 
 }
 
 export const AddServiceScreen = () => {
+
   const { colors } = useTheme();
+  const { addService } = useContext(ApiEstrellaContext)
 
   return (
     <View style={styles.container}>
       <Card containerStyle={{ ...styles.card, backgroundColor: colors.card }}>
         <Formik
-          initialValues={{ newService: "", precio: "" }}
+          initialValues={{ service: "", precio: "" }}
           validate={(values) => {
             const expresiones = {
               nombre: /^[a-zA-ZÀ-ÿ\s]{3,40}$/, // Letras y espacios, pueden llevar acentos.
@@ -25,15 +28,15 @@ export const AddServiceScreen = () => {
 
             const errors = {} as Props;
 
-            if (!expresiones.nombre.test(values.newService))
-              errors.newService = "Debe ingresar un servicio valido";
+            if (!expresiones.nombre.test(values.service))
+              errors.service = "Debe ingresar un servicio valido";
 
             if (!expresiones.precio.test(values.precio))
               errors.precio = "Debe ingresar un precio valido";
 
             return errors;
           }}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={(values) => addService(values)}
         >
           {({
             handleChange,
@@ -48,12 +51,12 @@ export const AddServiceScreen = () => {
               <TextInput
                 style={styles.input}
                 placeholder="manicura rusa"
-                onChangeText={handleChange("newService")}
-                onBlur={handleBlur("newService")}
-                value={values.newService}
+                onChangeText={handleChange("service")}
+                onBlur={handleBlur("service")}
+                value={values.service}
               />
-              {errors.newService && touched.newService && (
-                <Text>{errors.newService}</Text>
+              {errors.service && touched.service && (
+                <Text>{errors.service}</Text>
               )}
               <TextInput
                 style={styles.input}

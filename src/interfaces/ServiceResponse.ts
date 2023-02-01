@@ -5,3 +5,8 @@ export interface ServiceResponse {
     precio:  string;
     service: string;
 }
+
+export interface AddService {
+    service: string;
+    precio:  string;
+}

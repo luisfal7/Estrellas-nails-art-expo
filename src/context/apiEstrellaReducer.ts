@@ -1,6 +1,6 @@
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { ClientResponse } from '../interfaces/ClientResponse';
-import { ServiceResponse } from '../interfaces/ServiceResponse';
+import { ServiceResponse, AddService } from '../interfaces/ServiceResponse';
 
 export interface ApiEstrellaState {
     models: ModelResponse[];
@@ -15,6 +15,7 @@ type ApiEstrellaAction =
 | { type: 'get_clients', payload: ClientResponse[] }
 | { type: 'get_services', payload: ServiceResponse[] }
 | { type: 'delete_service', payload: string }
+| { type: 'add_service', payload: AddService }
 
 export const apiEstrellaReducer = (state: ApiEstrellaState, action: ApiEstrellaAction):ApiEstrellaState => {
 

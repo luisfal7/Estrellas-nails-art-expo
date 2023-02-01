@@ -3,7 +3,7 @@ import estrellasApi from "../api/estrellasApi";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
 import { ClientResponse } from '../interfaces/ClientResponse';
-import { ServiceResponse } from '../interfaces/ServiceResponse';
+import { ServiceResponse, AddService } from '../interfaces/ServiceResponse';
 
 interface apiEstrellaContextProps {
   models: ModelResponse[];
@@ -15,6 +15,7 @@ interface apiEstrellaContextProps {
   getClients: () => void;
   getServices: () => void;
   deleteService: (selectService: ServiceResponse) => void;
+  addService: (newService: AddService ) => void;
 }
 
 const initialState: ApiEstrellaState = {
@@ -90,6 +91,33 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const addService = async( newService: AddService ) => {
+    try {
+      
+      const { data } = await estrellasApi.get(`/services.json`)
+      const services = []
+      for( let id of Object.keys( data ) ){
+          services.push({
+              id,
+              ...data[id]
+          })
+      }
+      if(!services.some( e => e.service.toUpperCase() === newService.service.toUpperCase() )){
+
+          newService.service = newService.service.toLowerCase()
+          await estrellasApi.post(`services.json`, newService)
+
+          return { ok: true }
+      }else{
+          return { ok: false, message: 'Servicio ya existente' }
+      }
+
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, message: 'error...' }
+    }
+  };
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -99,6 +127,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         getClients,
         getServices,
         deleteService,
+        addService,
       }}
     >
       {children}
