@@ -1,19 +1,18 @@
 import React, { useContext } from "react";
 import { useTheme } from "@react-navigation/native";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import { Card, Button } from "@rneui/themed";
 import { Formik } from "formik";
-import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
+import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
 
-interface Props { 
-  service: string, 
-  precio: string 
+interface Props {
+  service: string;
+  precio: string;
 }
 
 export const AddServiceScreen = () => {
-
   const { colors } = useTheme();
-  const { addService } = useContext(ApiEstrellaContext)
+  const { addService } = useContext(ApiEstrellaContext);
 
   return (
     <View style={styles.container}>
@@ -36,7 +35,25 @@ export const AddServiceScreen = () => {
 
             return errors;
           }}
-          onSubmit={(values) => addService(values)}
+          onSubmit={async (values, { resetForm }) => {
+            try {
+              const { ok } = await addService(values);
+              if (ok) {
+                Alert.alert(
+                  "Alerta",
+                  "El servicio se ha cargado correctamente"
+                );
+                resetForm();
+              } else {
+                Alert.alert(
+                  "Alerta",
+                  "¡El servicio ya existente!"
+                );
+              }
+            } catch (error) {
+              Alert.alert("Alerta", "Error en la carga del servicio");
+            }
+          }}
         >
           {({
             handleChange,
@@ -56,7 +73,7 @@ export const AddServiceScreen = () => {
                 value={values.service}
               />
               {errors.service && touched.service && (
-                <Text>{errors.service}</Text>
+                <Text style={styles.errors}>{errors.service}</Text>
               )}
               <TextInput
                 style={styles.input}
@@ -66,7 +83,7 @@ export const AddServiceScreen = () => {
                 value={values.precio}
                 keyboardType="numeric"
               />
-              {errors.precio && touched.precio && <Text>{errors.precio}</Text>}
+              {errors.precio && touched.precio && <Text style={styles.errors}>{errors.precio}</Text>}
               <Button
                 radius={"md"}
                 type="solid"
@@ -114,4 +131,10 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     marginHorizontal: 10,
   },
+  errors: {
+    fontSize:10,
+    color:'red',
+    top:-10,
+    left:20
+  }
 });

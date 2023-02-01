@@ -15,7 +15,7 @@ interface apiEstrellaContextProps {
   getClients: () => void;
   getServices: () => void;
   deleteService: (selectService: ServiceResponse) => void;
-  addService: (newService: AddService ) => void;
+  addService: (newService: AddService ) => any;
 }
 
 const initialState: ApiEstrellaState = {
@@ -102,19 +102,18 @@ export const ApiEstrellaProvider = ({ children }: any) => {
               ...data[id]
           })
       }
+ 
       if(!services.some( e => e.service.toUpperCase() === newService.service.toUpperCase() )){
 
-          newService.service = newService.service.toLowerCase()
           await estrellasApi.post(`services.json`, newService)
 
           return { ok: true }
       }else{
-          return { ok: false, message: 'Servicio ya existente' }
+          return { ok: false }
       }
 
     } catch (error) {
       console.log({ error });
-      return { ok: false, message: 'error...' }
     }
   };
 
