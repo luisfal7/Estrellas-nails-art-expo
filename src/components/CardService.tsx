@@ -1,6 +1,6 @@
 import React,{ useContext } from "react";
 import { View, Text, StyleSheet, Dimensions, Alert } from "react-native";
-import { Button, Icon } from "@rneui/themed";
+import { Button, Card, Icon } from "@rneui/themed";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
 import { useTheme } from '@react-navigation/native';
@@ -28,7 +28,7 @@ export const CardService = ({ service, index }: Props) => {
   ])}
 
   return (
-    <View style={{...styles.containerCard, backgroundColor: colors.card}}>
+    <Card containerStyle={{...styles.containerCard, backgroundColor: colors.card}}>
       <View style={styles.container}>
         <View style={styles.containerText}>
           <Text style={styles.title}>
@@ -45,7 +45,7 @@ export const CardService = ({ service, index }: Props) => {
           </Button>
         </View>
       </View>
-    </View>
+    </Card>
   );
 };
 
@@ -55,8 +55,14 @@ const styles = StyleSheet.create({
     backgroundColor:'white',
     borderRadius: 10,
     borderWidth: 1,
-    padding: 5,
-    margin: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 8,
   },
   container: {
     flex: 1,
