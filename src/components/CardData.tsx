@@ -1,7 +1,8 @@
-import React, { useContext } from 'react'
+import React, { useContext,useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Card } from '@rneui/themed';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Props{
     title: string;
@@ -12,15 +13,30 @@ export const CardData = ( {title, total}:Props ) => {
 
     const { colors } = useTheme();
 
+    const [hideTotal, setHideTotal] = useState<boolean>(true)
+
+    const changeHideTotal = () => {
+        if(hideTotal){
+            setHideTotal(false)
+        }else{
+            setHideTotal(true)
+        }
+    }
+
   return (
     <View>
         <Card containerStyle={{...styles.container, backgroundColor: colors.card }}>
             <Text>
                 {title}
             </Text>
-            <Text style={ styles.total }>
-                {total}
-            </Text>
+            <View style={ styles.total }>
+                <TouchableOpacity 
+                    onPress={changeHideTotal}
+                    activeOpacity={0.5}
+                >
+                    { hideTotal ? <Text style={styles.value}>******</Text> : <Text style={styles.value}>{total} $</Text>}
+                </TouchableOpacity>
+            </View>
         </Card>
     </View>
   )
@@ -45,6 +61,9 @@ const styles = StyleSheet.create({
     total: {
         paddingTop:5,
         alignSelf:'center',
+        fontWeight:'bold'
+    },
+    value: {
         fontWeight:'bold'
     }
 })

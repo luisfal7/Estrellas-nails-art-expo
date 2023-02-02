@@ -61,7 +61,18 @@ export const ApiEstrellaProvider = ({ children }: any) => {
       const responseClientsArray: ClientResponse[] = Object.entries(
         clients.data
       ).map(([id, obj]) => ({ id, ...obj }));
-      dispatch({ type: "get_clients", payload: responseClientsArray });
+
+      const clientsOrder = responseClientsArray.sort((a, b) => {
+        if(a.fecha == b.fecha) {
+          return 0; 
+        }
+        if(a.fecha < b.fecha) {
+          return -1;
+        }
+        return 1
+      })
+
+      dispatch({ type: "get_clients", payload: clientsOrder });
     } catch (error) {
       console.log({ error });
     }

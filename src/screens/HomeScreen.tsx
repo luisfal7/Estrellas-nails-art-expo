@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
   StatusBar,
+  SafeAreaView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
@@ -13,6 +14,7 @@ import { Button, Icon } from "@rneui/themed";
 import { CardData } from "../components/CardData";
 import { CardClient } from "../components/CardClient";
 import { useTheme } from "@react-navigation/native";
+
 
 export const HomeScreen = () => {
 
@@ -32,10 +34,10 @@ export const HomeScreen = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar
         animated={true}
-        backgroundColor={colors.background}
+        backgroundColor={'black'}
       />
       <View style={styles.containerData}>
         <CardData title="Ingresos Totales" total={servicesTotal} />
@@ -70,9 +72,9 @@ export const HomeScreen = () => {
         />
       </View>
       <View>
-        <Text style={styles.title}>Ultimo cliente</Text>
+        <Text style={styles.title}>Ultima solicitud</Text>
         {isLoading ? (
-          <ActivityIndicator />
+          <ActivityIndicator color={colors.primary} size={"large"}/>
         ) : (
           <Text style={styles.client}>
             <CardClient
@@ -81,7 +83,23 @@ export const HomeScreen = () => {
           </Text>
         )}
       </View>
-    </View>
+      <View>
+        <Text style={styles.title}>Lista de clientes</Text>
+        {isLoading ? (
+          <ActivityIndicator color={colors.primary} size={"large"}/>
+        ) : (
+          <FlatList 
+            style={styles.listClient}
+            showsVerticalScrollIndicator={false}
+            data={ clients }
+            keyExtractor={((item) => item.id)}
+            renderItem={({ item }) => (
+              <CardClient client={item}/>
+            )}
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -89,24 +107,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    paddingVertical: 50,
+    paddingVertical: 5,
   },
   containerData: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    paddingVertical: 30,
+    paddingVertical: 5,
   },
   containerBtn: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    paddingVertical: 50,
+    paddingVertical: 10,
   },
   title: {
-    paddingVertical: 10,
     alignSelf: "center",
   },
   client: {
-    padding: 10,
+    padding: 5,
     alignSelf: "center",
   },
+  listClient:{
+    
+  }
 });
