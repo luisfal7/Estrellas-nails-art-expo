@@ -18,7 +18,7 @@ export const AddServiceScreen = () => {
           initialValues={{ service: "", precio: "" }}
           validate={(values) => {
             const expresiones = {
-              nombre: /^[a-zA-ZÀ-ÿ\s]{3,100}$/, // Letras y espacios, pueden llevar acentos.
+              nombre: /^[a-zA-ZÀ-ÿ\s\W]{3,100}$/, // Letras y espacios, pueden llevar acentos.
               precio: /^\d{1,6}$/, // 1 a 6 numeros.
             };
 
