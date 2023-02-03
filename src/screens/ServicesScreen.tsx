@@ -24,7 +24,7 @@ export const ServicesScreen = () => {
           data={services}
           renderItem={({ item, index }) => (
             <CardService service={item} index={index} />
-          )}
+            )}
           style={styles.listServices}
         />
 

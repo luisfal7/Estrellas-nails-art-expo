@@ -2,8 +2,8 @@ import { createContext, useReducer, useEffect } from "react";
 import estrellasApi from "../api/estrellasApi";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
-import { ClientResponse } from '../interfaces/ClientResponse';
-import { ServiceResponse, AddService } from '../interfaces/ServiceResponse';
+import { ClientResponse } from "../interfaces/ClientResponse";
+import { ServiceResponse } from "../interfaces/ServiceResponse";
 
 interface apiEstrellaContextProps {
   models: ModelResponse[];
@@ -16,7 +16,10 @@ interface apiEstrellaContextProps {
   deleteClient: (selectClient: ClientResponse) => void;
   getServices: () => void;
   deleteService: (selectService: ServiceResponse) => void;
-  addService: (newService: ServiceResponse ) => any;
+  addService: (newService: ServiceResponse) => Promise<{ ok: boolean }>;
+  modifService: (
+    selectService: ServiceResponse
+  ) => Promise<{ ok: boolean; message: string }>;
 }
 
 const initialState: ApiEstrellaState = {
@@ -43,7 +46,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const deleteModel = async(selectModel: ModelResponse) => {
+  const deleteModel = async (selectModel: ModelResponse) => {
     try {
       const { model, id } = selectModel;
       await estrellasApi.delete<ModelResponse>(
@@ -63,14 +66,14 @@ export const ApiEstrellaProvider = ({ children }: any) => {
       ).map(([id, obj]) => ({ id, ...obj }));
 
       const clientsOrder = responseClientsArray.sort((a, b) => {
-        if(a.fecha == b.fecha) {
-          return 0; 
+        if (a.fecha == b.fecha) {
+          return 0;
         }
-        if(a.fecha < b.fecha) {
+        if (a.fecha < b.fecha) {
           return -1;
         }
-        return 1
-      })
+        return 1;
+      });
 
       dispatch({ type: "get_clients", payload: clientsOrder });
     } catch (error) {
@@ -78,7 +81,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const deleteClient = async(selectClient: ClientResponse) => {
+  const deleteClient = async (selectClient: ClientResponse) => {
     try {
       const { id } = selectClient;
       await estrellasApi.delete<ClientResponse>(
@@ -92,7 +95,9 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const getServices = async () => {
     try {
-      const services = await estrellasApi.get<ServiceResponse>("/services.json");
+      const services = await estrellasApi.get<ServiceResponse>(
+        "/services.json"
+      );
       const responseServicesArray: ServiceResponse[] = Object.entries(
         services.data
       ).map(([id, obj]) => ({ id, ...obj }));
@@ -102,10 +107,10 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const deleteService = async(selectService: ServiceResponse) => {
+  const deleteService = async (selectService: ServiceResponse) => {
     try {
       const { service, precio } = selectService;
-      const dataToSave = { service, precio }
+      const dataToSave = { service, precio };
       await estrellasApi.delete<ServiceResponse>(
         `/services/${selectService.id}.json`,
         dispatch({ type: "delete_service", payload: dataToSave.service })
@@ -115,29 +120,66 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const addService = async( newService: ServiceResponse ) => {
+  const addService = async (newService: ServiceResponse) => {
     try {
-      
-      const { data } = await estrellasApi.get(`/services.json`)
-      const services = []
-      for( let id of Object.keys( data ) ){
-          services.push({
-              id,
-              ...data[id]
-          })
+      const services = await estrellasApi.get<ServiceResponse>(
+        "/services.json"
+      );
+
+      const responseServicesArray: ServiceResponse[] = Object.entries(
+        services.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+
+      if (
+        !responseServicesArray.some(
+          (e) => e.service.toUpperCase() === newService.service.toUpperCase()
+        )
+      ) {
+        await estrellasApi.post(`services.json`, newService);
+        dispatch({ type: "add_service", payload: newService });
+        return { ok: true };
+      } else {
+        return { ok: false };
       }
- 
-      if(!services.some( e => e.service.toUpperCase() === newService.service.toUpperCase() )){
-
-          await estrellasApi.post(`services.json`, newService)
-
-          return { ok: true }
-      }else{
-          return { ok: false }
-      }
-
     } catch (error) {
       console.log({ error });
+      return { ok: false, message: "Error al agregar servicio" };
+    }
+  };
+
+  const modifService = async (selectService: ServiceResponse) => {
+    try {
+      const services = await estrellasApi.get<ServiceResponse>(
+        "/services.json"
+      );
+      const responseServicesArray: ServiceResponse[] = Object.entries(
+        services.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+
+      const newService = responseServicesArray.some(
+        (e) =>
+          e.service.toUpperCase() === selectService.service.toUpperCase() &&
+          e.precio === selectService.precio
+      );
+
+      if (!newService) {
+        await estrellasApi.put(
+          `/services/${selectService.id}.json`,
+          selectService
+        );
+
+        dispatch({ type: "modif_service", payload: selectService });
+
+        return {
+          ok: true,
+          message: "El servicio se ha modificado correctamente",
+        };
+      } else {
+        return { ok: false, message: "¡El servicio ya existente!" };
+      }
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, message: "Error en la carga del servicio" };
     }
   };
 
@@ -152,6 +194,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         getServices,
         deleteService,
         addService,
+        modifService,
       }}
     >
       {children}

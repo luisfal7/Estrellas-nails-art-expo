@@ -1,9 +1,16 @@
-import React,{ useContext } from "react";
-import { View, Text, StyleSheet, Dimensions, Alert } from "react-native";
+import React, { useContext, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Alert,
+} from "react-native";
+import { useTheme } from "@react-navigation/native";
 import { Button, Card, Icon } from "@rneui/themed";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
-import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
-import { useTheme } from '@react-navigation/native';
+import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
+import { ModalEditService } from "./ModalEditService";
 
 interface Props {
   service: ServiceResponse;
@@ -13,46 +20,68 @@ interface Props {
 const windowWidth = Dimensions.get("window").width;
 
 export const CardService = ({ service, index }: Props) => {
+  const { deleteService } = useContext(ApiEstrellaContext);
 
-  const {deleteService} = useContext(ApiEstrellaContext)
+const [modalVisible, setModalVisible] = useState(false);
+
   const { colors } = useTheme();
 
+  const toggleModal = () => {
+    setModalVisible(!modalVisible)
+  }
+
   const AlertDeleteService = () => {
-    Alert.alert('¿Desea borrar el servicio?', 'Al seleccionar "OK" el servicio se borrará permanentemente.', [
-      {
-        text: 'Cancel',
-        onPress: () => {},
-        style: 'cancel',
-      },
-      {text: 'OK', onPress: () => deleteService(service)},
-  ])}
+    Alert.alert(
+      "¿Desea borrar el servicio?",
+      'Al seleccionar "OK" el servicio se borrará permanentemente.',
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel",
+        },
+        { text: "OK", onPress: () => deleteService(service) },
+      ]
+    );
+  };
 
   return (
-    <Card containerStyle={{...styles.containerCard, backgroundColor: colors.card}}>
-      <View style={styles.container}>
-        <View style={styles.containerText}>
-          <Text style={styles.title}>
-            {index + 1} - {service.service}
-          </Text>
-          <Text style={styles.precio}>Precio actual: {service.precio}$</Text>
+    <View>
+      <Card
+        containerStyle={{ ...styles.containerCard, backgroundColor: colors.card }}
+      >
+        <View style={styles.container}>
+          <View style={styles.containerText}>
+            <Text style={styles.title}>
+              {index + 1} - {service.service}
+            </Text>
+            <Text style={styles.precio}>Precio actual: {service.precio}$</Text>
+          </View>
+          <View style={styles.containerBtn}>
+            <Button
+              radius={"md"}
+              type="clear"
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Icon name="create-outline" type="ionicon" color="gray" />
+            </Button>
+            <Button radius={"md"} type="clear" onPress={AlertDeleteService}>
+              <Icon name="trash-outline" type="ionicon" color="gray" />
+            </Button>
+          </View>
         </View>
-        <View style={styles.containerBtn}>
-          <Button radius={"md"} type="clear" onPress={() => {}}>
-            <Icon name="create-outline" type="ionicon" color="gray" />
-          </Button>
-          <Button radius={"md"} type="clear" onPress={AlertDeleteService}>
-            <Icon name="trash-outline" type="ionicon" color="gray" />
-          </Button>
-        </View>
+      </Card>
+      <View>
+        <ModalEditService service={service} modalVisible={modalVisible} onToggle={toggleModal}/>
       </View>
-    </Card>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   containerCard: {
     flex: 1,
-    backgroundColor:'white',
+    backgroundColor: "white",
     borderRadius: 10,
     borderWidth: 1,
     shadowColor: "#000",
@@ -86,4 +115,5 @@ const styles = StyleSheet.create({
   containerBtn: {
     justifyContent: "space-between",
   },
+
 });

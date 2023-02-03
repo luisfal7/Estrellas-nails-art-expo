@@ -15,7 +15,7 @@ export const AddServiceScreen = () => {
     <View style={styles.container}>
       <Card containerStyle={{ ...styles.card, backgroundColor: colors.card }}>
         <Formik
-          initialValues={{ service: "", precio: "" }}
+          initialValues={{ service: "", precio: ""}}
           validate={(values) => {
             const expresiones = {
               nombre: /^[a-zA-ZÀ-ÿ\s\W]{3,100}$/, // Letras, espacios y caracteres no alfa numericos, pueden llevar acentos.
