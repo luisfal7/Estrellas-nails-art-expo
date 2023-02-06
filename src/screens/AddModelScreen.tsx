@@ -14,12 +14,18 @@ import { Button } from "@rneui/themed";
 import uploadImageDB from "../helpers/uploadImageDB";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
 
+interface Props {
+  uri: string;
+  type: string | null;
+  name: string | undefined;
+}
+
 export const AddModelScreen = () => {
   const { colors } = useTheme();
 
   const { addModel } = useContext(ApiEstrellaContext);
 
-  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [selectedImage, setSelectedImage] = useState<Props | null>(null);
 
   const imageSource = selectedImage !== null && { uri: selectedImage.uri };
 
