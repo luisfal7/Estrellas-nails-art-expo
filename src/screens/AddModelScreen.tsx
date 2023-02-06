@@ -28,7 +28,7 @@ export const AddModelScreen = () => {
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
-      alert("You've refused to allow this appp to access your photos!");
+      alert("¡Te has negado a permitir que esta aplicación acceda a tu cámara!, active los permisos.");
       return;
     }
 
@@ -59,7 +59,7 @@ export const AddModelScreen = () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
     if (permissionResult.granted === false) {
-      alert("You've refused to allow this appp to access your camera!");
+      alert("¡Te has negado a permitir que esta aplicación acceda a tu cámara!, active los permisos.");
       return;
     }
 
@@ -86,14 +86,17 @@ export const AddModelScreen = () => {
   };
 
   const updateImage = async () => {
-    const resp = await uploadImageDB(selectedImage);
-    setSelectedImage(null);
-    console.log(resp);
-    const { ok, message } = await addModel(resp);
-    if (ok) {
-      Alert.alert("Alerta", message);
-    } else {
-      Alert.alert("Alerta", message);
+    if(selectedImage){      
+      const resp = await uploadImageDB(selectedImage);
+      const { ok, message } = await addModel(resp);
+      if (ok) {
+        Alert.alert("Alerta", message);
+      } else {
+        Alert.alert("Alerta", message);
+      }
+      setSelectedImage(null);
+    }else{
+      alert("Seleccione una imagen o tome una foto.")
     }
   };
 
