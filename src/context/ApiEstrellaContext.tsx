@@ -68,10 +68,23 @@ export const ApiEstrellaProvider = ({ children }: any) => {
       ).map(([id, obj]) => ({ id, ...obj }));
 
       const clientsOrder = responseClientsArray.sort((a, b) => {
-        if (a.fecha == b.fecha) {
+
+        const fechaA = a.fecha.split('/')
+        const diaA = parseInt(fechaA[0]) 
+        const mesA =  parseInt(fechaA[1]) - 1
+        const yearA = parseInt(fechaA[2]) 
+        var fechaDateA = new Date(yearA, mesA, diaA)
+
+        const fechaB = b.fecha.split('/')
+        const diaB = parseInt(fechaB[0])
+        const mesB = parseInt(fechaB[1]) - 1
+        const yearB = parseInt(fechaB[2])
+        var fechaDateB = new Date(yearB, mesB, diaB)
+
+        if (Date.parse(fechaDateA.toString()) === Date.parse(fechaDateB.toString())) {
           return 0;
         }
-        if (a.fecha < b.fecha) {
+        if (Date.parse(fechaDateA.toString()) < Date.parse(fechaDateB.toString())) {
           return -1;
         }
         return 1;

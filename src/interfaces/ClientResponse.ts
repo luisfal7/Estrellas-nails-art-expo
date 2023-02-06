@@ -11,5 +11,5 @@ export interface ClientResponse {
 export interface Service {
     id:      string;
     precio:  string;
-    service: string;
+    service: string | Date;
 }
