@@ -1,9 +1,10 @@
 import { createContext, useReducer, useEffect } from "react";
 import estrellasApi from "../api/estrellasApi";
-import { ModelResponse } from "../interfaces/ModelResponse";
+import { ModelResponse } from '../interfaces/ModelResponse';
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
 import { ClientResponse } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
+import uploadImageDB from "../helpers/uploadImageDB";
 
 interface apiEstrellaContextProps {
   models: ModelResponse[];
@@ -20,6 +21,7 @@ interface apiEstrellaContextProps {
   modifService: (
     selectService: ServiceResponse
   ) => Promise<{ ok: boolean; message: string }>;
+  addModel:( pickImage: string ) => Promise<{ ok: boolean; message: string }>;
 }
 
 const initialState: ApiEstrellaState = {
@@ -183,6 +185,30 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const addModel = async(pickImage: string) => {
+
+    try {
+      const dataToSave: ModelResponse = {
+        model: pickImage
+      }
+
+      await estrellasApi.post(`models.json`, dataToSave);
+
+      dispatch({ type: "add_model", payload: dataToSave});
+
+      return {
+        ok: true,
+        message: "La imagen se ha subido correctamente",
+      };
+    } catch (error) {
+      console.log({error})
+      return {
+        ok: false,
+        message: "Error en la carga de la imagen, vuelva a intentarlo mas tarde",
+      };
+    }
+  };
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -195,6 +221,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         deleteService,
         addService,
         modifService,
+        addModel,
       }}
     >
       {children}

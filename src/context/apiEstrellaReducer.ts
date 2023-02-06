@@ -12,6 +12,7 @@ export interface ApiEstrellaState {
 type ApiEstrellaAction =
   | { type: "get_models"; payload: ModelResponse[] }
   | { type: "delete_model"; payload: string }
+  | { type: "add_model"; payload: ModelResponse }
   | { type: "get_clients"; payload: ClientResponse[] }
   | { type: "delete_client"; payload: string }
   | { type: "get_services"; payload: ServiceResponse[] }
@@ -31,6 +32,13 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         models: state.models.filter((e) => e.model !== action.payload),
+        isLoading: false,
+      };
+
+    case "add_model":
+      return {
+        ...state,
+        models: [...state.models, action.payload],
         isLoading: false,
       };
 
