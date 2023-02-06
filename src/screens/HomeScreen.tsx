@@ -15,9 +15,7 @@ import { CardData } from "../components/CardData";
 import { CardClient } from "../components/CardClient";
 import { useTheme } from "@react-navigation/native";
 
-
 export const HomeScreen = () => {
-
   const navigation = useNavigation();
   const { colors } = useTheme();
 
@@ -27,7 +25,31 @@ export const HomeScreen = () => {
     .map((e) => e.service)
     .flat()
     .map((e) => parseInt(e.precio));
+
   const servicesTotal = servicesClient.reduce((pv, cv) => pv + cv, 0);
+
+  const listClientsFechaDate = clients.map((e) => ({
+    ...e,
+    fecha: new Date(
+      parseInt(e.fecha.split("/")[2]),
+      parseInt(e.fecha.split("/")[1]) - 1,
+      parseInt(e.fecha.split("/")[0])
+    ).toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    }),
+  }));
+
+  const fecha = new Date();
+  const dia = fecha.getDate();
+  const mes = fecha.getMonth() + 1;
+  const year = fecha.getFullYear();
+  const fechaHoy = mes + "/" + dia + "/" + year;
+
+  const listClientsDateNow = listClientsFechaDate.filter(
+    (e) => Date.parse(e.fecha) >= Date.parse(fechaHoy)
+  );
 
   useEffect(() => {
     getClients();
@@ -35,10 +57,7 @@ export const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        animated={true}
-        backgroundColor={'black'}
-      />
+      <StatusBar animated={true} backgroundColor={"black"} />
       <View style={styles.containerData}>
         <CardData title="Ingresos Totales" total={servicesTotal} />
         <CardData title="Gastos Totales" total={0} />
@@ -55,7 +74,7 @@ export const HomeScreen = () => {
             size: 25,
           }}
           title="Modelo"
-          onPress={() => navigation.navigate('AddModelScreen') }
+          onPress={() => navigation.navigate("AddModelScreen")}
         />
         <Button
           radius={"md"}
@@ -68,13 +87,13 @@ export const HomeScreen = () => {
             size: 25,
           }}
           title="Servicio"
-          onPress={() => navigation.navigate('AddServiceScreen') }
+          onPress={() => navigation.navigate("AddServiceScreen")}
         />
       </View>
       <View>
         <Text style={styles.title}>Ultima solicitud</Text>
         {isLoading ? (
-          <ActivityIndicator color={colors.primary} size={"large"}/>
+          <ActivityIndicator color={colors.primary} size={"large"} />
         ) : (
           <Text style={styles.client}>
             <CardClient
@@ -86,16 +105,14 @@ export const HomeScreen = () => {
       <View>
         <Text style={styles.title}>Lista de clientes</Text>
         {isLoading ? (
-          <ActivityIndicator color={colors.primary} size={"large"}/>
+          <ActivityIndicator color={colors.primary} size={"large"} />
         ) : (
-          <FlatList 
+          <FlatList
             style={styles.listClient}
             showsVerticalScrollIndicator={false}
-            data={ clients }
-            keyExtractor={((item) => item.id)}
-            renderItem={({ item }) => (
-              <CardClient client={item}/>
-            )}
+            data={listClientsDateNow}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <CardClient client={item} />}
           />
         )}
       </View>
@@ -126,7 +143,5 @@ const styles = StyleSheet.create({
     padding: 5,
     alignSelf: "center",
   },
-  listClient:{
-    
-  }
+  listClient: {},
 });
