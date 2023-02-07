@@ -6,7 +6,7 @@ import { ClientResponse } from "../interfaces/ClientResponse";
 import { ApiEstrellaContext } from '../context/ApiEstrellaContext';
 
 interface Props {
-  client: ClientResponse;
+  client: ClientResponse | null;
 }
 
 const windowWidth = Dimensions.get("window").width;
@@ -30,13 +30,13 @@ export const CardClient = ({ client }: Props) => {
   return (
     <Card containerStyle={{...styles.container, backgroundColor:colors.card}}>
       <View style={styles.title}>
-        <Card.Title>{client.name}</Card.Title>
+        <Card.Title>{client?.name}</Card.Title>
         <Card.Title>
-          {client.fecha} - {client.hour}
+          {client?.fecha} - {client?.hour}
         </Card.Title>
       </View>
       <Card.Divider />
-      {client.service.map((e) => (
+      {client?.service.map((e) => (
         <View style={styles.containerService} key={e.id}>
           <Text style={styles.serviceTitle}>{e.service}</Text>
           <Text style={styles.servicePrecio}>{e.precio}$</Text>
@@ -44,7 +44,7 @@ export const CardClient = ({ client }: Props) => {
       ))}
       <View style={ styles.footer }>
         <Text style={styles.id}>
-          {client.email} | {client.id} |
+          {client?.email} | {client?.id} |
         </Text>
         <Button radius={"md"} type="clear" size="sm" onPress={AlertDeleteClient}>
             <Icon name="trash-outline" type="ionicon" color="gray" size={18} />

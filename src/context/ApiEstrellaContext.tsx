@@ -4,12 +4,12 @@ import { ModelResponse } from '../interfaces/ModelResponse';
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
 import { ClientResponse } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
-import uploadImageDB from "../helpers/uploadImageDB";
 
 interface apiEstrellaContextProps {
   models: ModelResponse[];
   clients: ClientResponse[];
   services: ServiceResponse[];
+  lastClient: ClientResponse | null;
   isLoading: boolean;
   getModels: () => void;
   deleteModel: (selectModel: ModelResponse) => void;
@@ -22,12 +22,14 @@ interface apiEstrellaContextProps {
     selectService: ServiceResponse
   ) => Promise<{ ok: boolean; message: string }>;
   addModel:( pickImage: string ) => Promise<{ ok: boolean; message: string }>;
+  lastClientResponse: () => Promise<void>;
 }
 
 const initialState: ApiEstrellaState = {
   models: [],
   clients: [],
   services: [],
+  lastClient: null,
   isLoading: true,
 };
 
@@ -222,6 +224,21 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const lastClientResponse = async() => {
+    try{
+      const clients = await estrellasApi.get<ClientResponse>("/clients.json");
+      const responseClientsArray: ClientResponse[] =  Object.entries(
+        clients.data
+      ).map(([id, obj]) => ({ id, ...obj }))
+
+      const lastClient = responseClientsArray.slice(responseClientsArray.length - 1, responseClientsArray.length )[0]
+      dispatch({ type: "get_last_client", payload: lastClient });
+    } catch (error) {
+      console.log({ error });
+    }
+    
+  }
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -235,6 +252,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         addService,
         modifService,
         addModel,
+        lastClientResponse
       }}
     >
       {children}

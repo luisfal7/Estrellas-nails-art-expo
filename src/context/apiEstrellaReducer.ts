@@ -6,6 +6,7 @@ export interface ApiEstrellaState {
   models: ModelResponse[];
   clients: ClientResponse[];
   services: ServiceResponse[];
+  lastClient: ClientResponse | null;
   isLoading: boolean;
 }
 
@@ -14,6 +15,7 @@ type ApiEstrellaAction =
   | { type: "delete_model"; payload: string }
   | { type: "add_model"; payload: ModelResponse }
   | { type: "get_clients"; payload: ClientResponse[] }
+  | { type: "get_last_client"; payload: ClientResponse }
   | { type: "delete_client"; payload: string }
   | { type: "get_services"; payload: ServiceResponse[] }
   | { type: "add_service"; payload: ServiceResponse }
@@ -45,9 +47,17 @@ export const apiEstrellaReducer = (
     case "get_clients":
       return { ...state, clients: action.payload, isLoading: false };
 
+    case "get_last_client":
+      return {
+        ...state,
+        lastClient: action.payload,
+        isLoading: false,
+      };
+
     case "delete_client":
       return {
         ...state,
+        lastClient: state.lastClient?.id === action.payload ? null: state.lastClient,
         clients: state.clients.filter((e) => e.id !== action.payload),
         isLoading: false,
       };

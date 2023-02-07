@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
-import { Button, Icon } from "@rneui/themed";
+import { Button } from "@rneui/themed";
 import { CardData } from "../components/CardData";
 import { CardClient } from "../components/CardClient";
 import { useTheme } from "@react-navigation/native";
@@ -19,7 +19,8 @@ export const HomeScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
 
-  const { clients, getClients, isLoading } = useContext(ApiEstrellaContext);
+  const { clients, lastClient, getClients, lastClientResponse, isLoading } =
+    useContext(ApiEstrellaContext);
 
   const servicesClient = clients
     .map((e) => e.service)
@@ -53,6 +54,7 @@ export const HomeScreen = () => {
 
   useEffect(() => {
     getClients();
+    lastClientResponse();
   }, []);
 
   return (
@@ -97,9 +99,14 @@ export const HomeScreen = () => {
           <ActivityIndicator color={colors.primary} size={"large"} />
         ) : (
           <Text style={styles.client}>
-            <CardClient
-              client={clients.slice(clients.length - 1, clients.length)[0]}
-            />
+            {lastClient ? (
+              <CardClient client={lastClient} />
+            ) : (
+              <Text style={styles.lastClientNotFound}>
+                Se ha eliminado el turno de la ultimo solicitud, actualice para
+                ver la ultima solicitud nuevamente.
+              </Text>
+            )}
           </Text>
         )}
       </View>
@@ -107,7 +114,7 @@ export const HomeScreen = () => {
         {isLoading ? (
           <ActivityIndicator color={colors.primary} size={"large"} />
         ) : (
-          <View style={{ height:380 }}>
+          <View style={{ height: 380 }}>
             <FlatList
               style={styles.listClient}
               showsVerticalScrollIndicator={false}
@@ -155,6 +162,12 @@ const styles = StyleSheet.create({
   },
   title: {
     alignSelf: "center",
+  },
+  lastClientNotFound: {
+    alignSelf: "center",
+    fontStyle: "italic",
+    fontSize: 12,
+    textDecorationLine: "underline",
   },
   client: {
     padding: 5,
