@@ -25,7 +25,7 @@ export const ModelsScreen = () => {
   }, []);
 
   return (
-    <View style={{ ...styles.container, top: top + 10 }}>
+    <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator
           color={colors.primary}
@@ -38,14 +38,25 @@ export const ModelsScreen = () => {
         />
       ) : (
         <View>
-          <Text style={styles.title}>Lista de Modelos</Text>
           <FlatList
             data={models}
             renderItem={({ item, index }) => (
               <CardModel model={item} index={index} />
             )}
             showsVerticalScrollIndicator={false}
-            style={styles.listModels}
+            ListHeaderComponent={
+              <View
+                style={{
+                  ...styles.containerListHeader,
+                  backgroundColor: colors.background,
+                  borderBottomColor: colors.primary,
+                  top: top,
+                }}
+              >
+                <Text style={ styles.title }>Lista de Modelos</Text>
+              </View>
+            }
+            stickyHeaderIndices={[0]}
           />
         </View>
       )}
@@ -55,13 +66,16 @@ export const ModelsScreen = () => {
 
 const styles = StyleSheet.create({
   container: {},
-  title: {
-    alignSelf: "center",
-    padding: 20,
+  containerListHeader: {
+    height: 50,
+    width: "100%",
+    paddingTop: 10,
+    borderBottomWidth: 1,
   },
-  listModels: {
-    alignSelf: "center",
-    marginBottom: 100,
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    alignSelf:'center'
   },
   indicator: {
     position: "absolute",

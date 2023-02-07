@@ -27,36 +27,48 @@ export const CardModel = ({ model, index }: Props) => {
   ])}
 
   return (
-    <View style={{ ...styles.container, backgroundColor: colors.card }}>
-      <Card.Image
-        style={styles.image}
-        source={{
-          uri: model.model,
-        }}
-      />
-      <View style={styles.containerBtn}>
-        <Text style={ styles.index }>{index + 1 }</Text>
-        <Button radius={"md"} type="clear" onPress={ AlertDeleteModel }>
-          <Icon name="trash-outline" type="ionicon" color="gray" />
-        </Button>
+    <Card containerStyle={{ ...styles.card, backgroundColor: colors.card }}>
+      <View style={styles.container}>
+        <Card.Image
+          style={styles.image}
+          source={{
+            uri: model.model,
+          }}
+        />
+        <View style={styles.containerBtn}>
+          <Text style={ styles.index }>{index + 1 }</Text>
+          <Button radius={"md"} type="clear" onPress={ AlertDeleteModel }>
+            <Icon name="trash-outline" type="ionicon" color="gray" />
+          </Button>
+        </View>
       </View>
-    </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
+  card: {
+    borderRadius:10,
+    margin:10,
+    padding:10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 8,
+  },
   container: {
     flexDirection:'row',
-    borderWidth:1,
-    borderColor:'gray',
-    borderRadius:10,
-    margin:5,
+    justifyContent: "space-between",
   },
   image:{
     resizeMode: "stretch",
     borderRadius:10,
-    width: 250,
-    height: 250,
+    width: 180,
+    height: 180,
     paddingVertical: 5
   },
   containerBtn: {
