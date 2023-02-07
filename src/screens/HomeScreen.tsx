@@ -68,6 +68,7 @@ export const HomeScreen = () => {
       <View style={styles.containerBtn}>
         <Button
           radius={"md"}
+          size="md"
           type="solid"
           color={colors.primary}
           raised
@@ -77,10 +78,12 @@ export const HomeScreen = () => {
             size: 25,
           }}
           title="Modelo"
+          containerStyle={styles.btn}
           onPress={() => navigation.navigate("AddModelScreen")}
         />
         <Button
           radius={"md"}
+          size="md"
           type="solid"
           color={colors.primary}
           raised
@@ -90,7 +93,38 @@ export const HomeScreen = () => {
             size: 25,
           }}
           title="Servicio"
+          containerStyle={styles.btn}
           onPress={() => navigation.navigate("AddServiceScreen")}
+        />
+        <Button
+          radius={"md"}
+          size="md"
+          type="solid"
+          color={colors.primary}
+          raised
+          icon={{
+            name: "add-circle-outline",
+            color: "white",
+            size: 25,
+          }}
+          title="stock"
+          containerStyle={styles.btn}
+          onPress={() => navigation.navigate("AddStockScreen")}
+        />
+        <Button
+          radius="md"
+          size="md"
+          type="solid"
+          color={colors.primary}
+          raised
+          icon={{
+            name: "add-circle-outline",
+            color: "white",
+            size: 25,
+          }}
+          title="Gastos"
+          containerStyle={styles.btn}
+          onPress={() => navigation.navigate("AddExpenseScreen")}
         />
       </View>
       <View>
@@ -154,7 +188,12 @@ const styles = StyleSheet.create({
   },
   containerBtn: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    flexWrap:"wrap",
+    justifyContent: "center",
+  },
+  btn:{
+    width:150,
+    margin:5
   },
   containerListHeader: {
     height: 20,
