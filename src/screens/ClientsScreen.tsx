@@ -5,6 +5,7 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
+  Dimensions
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
@@ -15,6 +16,9 @@ export const ClientsScreen = () => {
   const { colors } = useTheme();
   const { clients, getClients, isLoading } = useContext(ApiEstrellaContext);
 
+  const dimensionWidth = Dimensions.get('window').width
+  const dimensionHeight = Dimensions.get('window').height
+
   useEffect(() => {
     getClients();
   }, []);
@@ -22,7 +26,7 @@ export const ClientsScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       {isLoading ? (
-        <ActivityIndicator color={colors.primary} size={"large"} />
+        <ActivityIndicator color={colors.primary} size={"large"} style={{...styles.indicator, top: dimensionHeight * 0.5, right: dimensionWidth * 0.5}}/>
       ) : (
         <View>
           <Text style={styles.title}>Lista de Clientes</Text>
@@ -43,4 +47,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     padding: 20,
   },
+  indicator: {
+    position: 'absolute'
+  }
 });
