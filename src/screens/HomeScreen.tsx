@@ -59,7 +59,8 @@ export const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar animated={true} backgroundColor={"black"} />
       <View style={styles.containerData}>
-        <CardData title="Ingresos Totales" total={servicesTotal} />
+        <CardData title="Ingresos Brutos" total={servicesTotal} />
+        <CardData title="Ingresos Neto" total={servicesTotal - 0} />
         <CardData title="Gastos Totales" total={0} />
       </View>
       <View style={styles.containerBtn}>
@@ -103,17 +104,29 @@ export const HomeScreen = () => {
         )}
       </View>
       <View>
-        <Text style={styles.title}>Lista de clientes</Text>
         {isLoading ? (
           <ActivityIndicator color={colors.primary} size={"large"} />
         ) : (
-          <FlatList
-            style={styles.listClient}
-            showsVerticalScrollIndicator={false}
-            data={listClientsDateNow}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <CardClient client={item} />}
-          />
+          <View style={{ height:380 }}>
+            <FlatList
+              style={styles.listClient}
+              showsVerticalScrollIndicator={false}
+              data={listClientsDateNow}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => <CardClient client={item} />}
+              ListHeaderComponent={
+                <View
+                  style={{
+                    ...styles.containerListHeader,
+                    backgroundColor: colors.background,
+                  }}
+                >
+                  <Text style={styles.title}>Proximos clientes</Text>
+                </View>
+              }
+              stickyHeaderIndices={[0]}
+            />
+          </View>
         )}
       </View>
     </SafeAreaView>
@@ -125,6 +138,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
     paddingVertical: 5,
+    justifyContent: "space-between",
   },
   containerData: {
     flexDirection: "row",
@@ -134,7 +148,10 @@ const styles = StyleSheet.create({
   containerBtn: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    paddingVertical: 10,
+  },
+  containerListHeader: {
+    height: 20,
+    width: "100%",
   },
   title: {
     alignSelf: "center",
