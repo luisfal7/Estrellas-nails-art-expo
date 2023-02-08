@@ -4,12 +4,14 @@ import { ModelResponse } from '../interfaces/ModelResponse';
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
 import { ClientResponse } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
+import { StockResponse } from '../interfaces/StockResponse';
 
 interface apiEstrellaContextProps {
   models: ModelResponse[];
   clients: ClientResponse[];
   services: ServiceResponse[];
   lastClient: ClientResponse | null;
+  stock: StockResponse[];
   isLoading: boolean;
   getModels: () => void;
   deleteModel: (selectModel: ModelResponse) => void;
@@ -23,6 +25,8 @@ interface apiEstrellaContextProps {
   ) => Promise<{ ok: boolean; message: string }>;
   addModel:( pickImage: string ) => Promise<{ ok: boolean; message: string }>;
   lastClientResponse: () => Promise<void>;
+  getStock: () => void;
+  deleteStockItem: (selectItem: StockResponse) => void;
 }
 
 const initialState: ApiEstrellaState = {
@@ -30,6 +34,7 @@ const initialState: ApiEstrellaState = {
   clients: [],
   services: [],
   lastClient: null,
+  stock:[],
   isLoading: true,
 };
 
@@ -239,6 +244,29 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     
   }
 
+  const getStock = async () => {
+    try {
+      const stock = await estrellasApi.get<StockResponse>("/stock.json");
+      const responseStockArray: StockResponse[] = Object.entries(
+        stock.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+      dispatch({ type: "get_stock", payload: responseStockArray });
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  const deleteStockItem = async (selectItem: StockResponse) => {
+    try {
+      await estrellasApi.delete<StockResponse>(
+        `/stock/${selectItem.id}.json`,
+        dispatch({ type: "delete_stock_item", payload: selectItem })
+      );
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -252,7 +280,9 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         addService,
         modifService,
         addModel,
-        lastClientResponse
+        lastClientResponse,
+        getStock,
+        deleteStockItem
       }}
     >
       {children}

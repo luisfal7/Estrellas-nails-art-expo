@@ -1,12 +1,14 @@
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { ClientResponse } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
+import { StockResponse } from "../interfaces/StockResponse";
 
 export interface ApiEstrellaState {
   models: ModelResponse[];
   clients: ClientResponse[];
   services: ServiceResponse[];
   lastClient: ClientResponse | null;
+  stock: StockResponse[];
   isLoading: boolean;
 }
 
@@ -20,7 +22,9 @@ type ApiEstrellaAction =
   | { type: "get_services"; payload: ServiceResponse[] }
   | { type: "add_service"; payload: ServiceResponse }
   | { type: "delete_service"; payload: string }
-  | { type: "modif_service"; payload: ServiceResponse };
+  | { type: "modif_service"; payload: ServiceResponse }
+  | { type: "get_stock"; payload: StockResponse[] }
+  | { type: "delete_stock_item"; payload: StockResponse };
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
@@ -57,7 +61,8 @@ export const apiEstrellaReducer = (
     case "delete_client":
       return {
         ...state,
-        lastClient: state.lastClient?.id === action.payload ? null: state.lastClient,
+        lastClient:
+          state.lastClient?.id === action.payload ? null : state.lastClient,
         clients: state.clients.filter((e) => e.id !== action.payload),
         isLoading: false,
       };
@@ -85,6 +90,16 @@ export const apiEstrellaReducer = (
         services: state.services.map((e) =>
           e.id === action.payload.id ? (e = action.payload) : e
         ),
+        isLoading: false,
+      };
+
+    case "get_stock":
+      return { ...state, stock: action.payload, isLoading: false };
+
+    case "delete_stock_item":
+      return {
+        ...state,
+        stock: state.stock.filter((e) => e !== action.payload),
         isLoading: false,
       };
 
