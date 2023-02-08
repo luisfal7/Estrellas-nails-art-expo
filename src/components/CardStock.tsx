@@ -3,17 +3,16 @@ import { View, Text, StyleSheet, Dimensions, Alert } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Button, Card, Icon } from "@rneui/themed";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
-import { StockResponse } from '../interfaces/StockResponse';
+import { StockResponse } from "../interfaces/StockResponse";
 
 interface Props {
-    item: StockResponse;
-    index: number;
+  item: StockResponse;
+  index: number;
 }
 
 const windowWidth = Dimensions.get("window").width;
 
 export const CardStock = ({ item, index }: Props) => {
-
   const { deleteStockItem } = useContext(ApiEstrellaContext);
 
   const { colors } = useTheme();
@@ -42,13 +41,30 @@ export const CardStock = ({ item, index }: Props) => {
         }}
       >
         <View style={styles.container}>
-          <View style={styles.containerText}>
-            <Text style={styles.title}>
-              {index + 1} - {item.marca} | {item.codigo} | {item.contenidoNeto}
-            </Text>
-            <Text style={styles.categoria}>{item.categoria} | {item.subcategoria}</Text>
+          <View style={styles.containerImgText}>
+            <Card.Image
+              style={styles.image}
+              source={{
+                uri: item.image,
+              }}
+            />
+
+            <View style={styles.containerItem}>
+              <Text style={styles.cantidad}>Cant: {item.cantidad}</Text>
+              <Text style={styles.title}>
+                {item.marca} {item.codigo} - {item.contenidoNeto}
+              </Text>
+              <Text style={styles.categoria}>
+                {item.categoria} | {item.subcategoria}
+              </Text>
+            </View>
           </View>
+
           <View style={styles.containerBtn}>
+            <Text style={styles.index}>{index + 1}</Text>
+            <Button radius={"md"} type="clear" onPress={()=>{}}>
+              <Icon name="create-outline" type="ionicon" color="gray" />
+            </Button>
             <Button radius={"md"} type="clear" onPress={AlertDeleteStock}>
               <Icon name="trash-outline" type="ionicon" color="gray" />
             </Button>
@@ -61,10 +77,9 @@ export const CardStock = ({ item, index }: Props) => {
 
 const styles = StyleSheet.create({
   containerCard: {
-    flex: 1,
-    backgroundColor: "white",
     borderRadius: 10,
-    borderWidth: 1,
+    margin: 10,
+    padding: 5,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -74,26 +89,41 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 8,
   },
+  image: {
+    resizeMode: "stretch",
+    borderRadius: 10,
+    width: 120,
+    height: 120,
+  },
   container: {
-    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 5,
   },
-  containerText: {
-    justifyContent: "space-between",
+  containerImgText: {
+    flexDirection: "row",
   },
-  title: {
-    width: windowWidth * 0.65,
-    fontWeight: "bold",
+  containerItem: {
+    paddingLeft: 10,
+  },
+  cantidad: {
+    opacity: 0.5,
     fontSize: 12,
   },
+  title: {
+    fontWeight: "bold",
+  },
   categoria: {
-    justifyContent: "center",
-    alignSelf: "flex-start",
+    opacity: 0.5,
     fontSize: 12,
   },
   containerBtn: {
     justifyContent: "space-between",
+  },
+  index: {
+    alignSelf: "center",
+    marginBottom: 5,
+    color: "gray",
+    borderBottomWidth: 1,
+    borderColor: "gray",
   },
 });
