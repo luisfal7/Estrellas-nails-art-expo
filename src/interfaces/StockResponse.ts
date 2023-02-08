@@ -2,9 +2,9 @@
 
 export interface StockResponse {
     id?:           string;
-    cantidad:      number;
+    cantidad:      string;
     categoria:     string;
-    codigo:        number;
+    codigo:        string;
     contenidoNeto: string;
     image:         string;
     marca:         string;

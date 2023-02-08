@@ -24,7 +24,8 @@ type ApiEstrellaAction =
   | { type: "delete_service"; payload: string }
   | { type: "modif_service"; payload: ServiceResponse }
   | { type: "get_stock"; payload: StockResponse[] }
-  | { type: "delete_stock_item"; payload: StockResponse };
+  | { type: "delete_stock_item"; payload: StockResponse }
+  | { type: "add_item_stock"; payload: StockResponse };
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
@@ -100,6 +101,13 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         stock: state.stock.filter((e) => e !== action.payload),
+        isLoading: false,
+      };
+
+    case "add_item_stock":
+      return {
+        ...state,
+        stock: [...state.stock, action.payload],
         isLoading: false,
       };
 

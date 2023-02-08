@@ -1,10 +1,10 @@
 import { createContext, useReducer, useEffect } from "react";
 import estrellasApi from "../api/estrellasApi";
-import { ModelResponse } from '../interfaces/ModelResponse';
+import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
 import { ClientResponse } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
-import { StockResponse } from '../interfaces/StockResponse';
+import { StockResponse } from "../interfaces/StockResponse";
 
 interface apiEstrellaContextProps {
   models: ModelResponse[];
@@ -23,10 +23,11 @@ interface apiEstrellaContextProps {
   modifService: (
     selectService: ServiceResponse
   ) => Promise<{ ok: boolean; message: string }>;
-  addModel:( pickImage: string ) => Promise<{ ok: boolean; message: string }>;
+  addModel: (pickImage: string) => Promise<{ ok: boolean; message: string }>;
   lastClientResponse: () => Promise<void>;
   getStock: () => void;
   deleteStockItem: (selectItem: StockResponse) => void;
+  addItemStock: (newItem: StockResponse) => Promise<{ ok: boolean }>;
 }
 
 const initialState: ApiEstrellaState = {
@@ -34,7 +35,7 @@ const initialState: ApiEstrellaState = {
   clients: [],
   services: [],
   lastClient: null,
-  stock:[],
+  stock: [],
   isLoading: true,
 };
 
@@ -75,23 +76,27 @@ export const ApiEstrellaProvider = ({ children }: any) => {
       ).map(([id, obj]) => ({ id, ...obj }));
 
       const clientsOrder = responseClientsArray.sort((a, b) => {
+        const fechaA = a.fecha.split("/");
+        const diaA = parseInt(fechaA[0]);
+        const mesA = parseInt(fechaA[1]) - 1;
+        const yearA = parseInt(fechaA[2]);
+        var fechaDateA = new Date(yearA, mesA, diaA);
 
-        const fechaA = a.fecha.split('/')
-        const diaA = parseInt(fechaA[0]) 
-        const mesA =  parseInt(fechaA[1]) - 1
-        const yearA = parseInt(fechaA[2]) 
-        var fechaDateA = new Date(yearA, mesA, diaA)
+        const fechaB = b.fecha.split("/");
+        const diaB = parseInt(fechaB[0]);
+        const mesB = parseInt(fechaB[1]) - 1;
+        const yearB = parseInt(fechaB[2]);
+        var fechaDateB = new Date(yearB, mesB, diaB);
 
-        const fechaB = b.fecha.split('/')
-        const diaB = parseInt(fechaB[0])
-        const mesB = parseInt(fechaB[1]) - 1
-        const yearB = parseInt(fechaB[2])
-        var fechaDateB = new Date(yearB, mesB, diaB)
-
-        if (Date.parse(fechaDateA.toString()) === Date.parse(fechaDateB.toString())) {
+        if (
+          Date.parse(fechaDateA.toString()) ===
+          Date.parse(fechaDateB.toString())
+        ) {
           return 0;
         }
-        if (Date.parse(fechaDateA.toString()) < Date.parse(fechaDateB.toString())) {
+        if (
+          Date.parse(fechaDateA.toString()) < Date.parse(fechaDateB.toString())
+        ) {
           return -1;
         }
         return 1;
@@ -205,44 +210,46 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const addModel = async(pickImage: string) => {
-
+  const addModel = async (pickImage: string) => {
     try {
       const dataToSave: ModelResponse = {
-        model: pickImage
-      }
+        model: pickImage,
+      };
 
       await estrellasApi.post(`models.json`, dataToSave);
 
-      dispatch({ type: "add_model", payload: dataToSave});
+      dispatch({ type: "add_model", payload: dataToSave });
 
       return {
         ok: true,
         message: "La imagen se ha subido correctamente",
       };
     } catch (error) {
-      console.log({error})
+      console.log({ error });
       return {
         ok: false,
-        message: "Error en la carga de la imagen, vuelva a intentarlo mas tarde",
+        message:
+          "Error en la carga de la imagen, vuelva a intentarlo mas tarde",
       };
     }
   };
 
-  const lastClientResponse = async() => {
-    try{
+  const lastClientResponse = async () => {
+    try {
       const clients = await estrellasApi.get<ClientResponse>("/clients.json");
-      const responseClientsArray: ClientResponse[] =  Object.entries(
+      const responseClientsArray: ClientResponse[] = Object.entries(
         clients.data
-      ).map(([id, obj]) => ({ id, ...obj }))
+      ).map(([id, obj]) => ({ id, ...obj }));
 
-      const lastClient = responseClientsArray.slice(responseClientsArray.length - 1, responseClientsArray.length )[0]
+      const lastClient = responseClientsArray.slice(
+        responseClientsArray.length - 1,
+        responseClientsArray.length
+      )[0];
       dispatch({ type: "get_last_client", payload: lastClient });
     } catch (error) {
       console.log({ error });
     }
-    
-  }
+  };
 
   const getStock = async () => {
     try {
@@ -267,6 +274,36 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const addItemStock = async (newItem: StockResponse) => {
+    try {
+      const stock = await estrellasApi.get<StockResponse>("/stock.json");
+
+      const responseStockArray: StockResponse[] = Object.entries(
+        stock.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+
+      if (
+        !responseStockArray.some(
+          (e) =>
+            e.categoria === newItem.categoria &&
+            e.codigo === newItem.codigo &&
+            e.contenidoNeto === newItem.contenidoNeto &&
+            e.marca === newItem.marca &&
+            e.subcategoria === newItem.subcategoria
+        )
+      ) {
+        await estrellasApi.post(`stock.json`, newItem);
+        dispatch({ type: "add_item_stock", payload: newItem });
+        return { ok: true };
+      } else {
+        return { ok: false };
+      }
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, message: "Error al agregar servicio" };
+    }
+  };
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -282,7 +319,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         addModel,
         lastClientResponse,
         getStock,
-        deleteStockItem
+        deleteStockItem,
+        addItemStock,
       }}
     >
       {children}
