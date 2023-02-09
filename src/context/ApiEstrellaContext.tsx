@@ -1,10 +1,11 @@
-import { createContext, useReducer, useEffect } from "react";
+import { createContext, useReducer } from "react";
 import estrellasApi from "../api/estrellasApi";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
-import { ClientResponse, Service } from '../interfaces/ClientResponse';
+import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { StockResponse } from "../interfaces/StockResponse";
+import { ExpenseResponse } from '../interfaces/ExpenseResponse';
 
 interface apiEstrellaContextProps {
   models: ModelResponse[];
@@ -12,6 +13,7 @@ interface apiEstrellaContextProps {
   services: ServiceResponse[];
   lastClient: ClientResponse | null;
   stock: StockResponse[];
+  expense: ExpenseResponse[];
   isLoading: boolean;
   getModels: () => void;
   deleteModel: (selectModel: ModelResponse) => void;
@@ -28,7 +30,14 @@ interface apiEstrellaContextProps {
   getStock: () => void;
   deleteStockItem: (selectItem: StockResponse) => void;
   addItemStock: (newItem: StockResponse) => Promise<{ ok: boolean }>;
-  addServiceClient:(client: ClientResponse, newService: Service) => Promise<{ ok: boolean; message: string }>;
+  addServiceClient: (
+    client: ClientResponse,
+    newService: Service
+  ) => Promise<{ ok: boolean; message: string }>;
+  addItemExpense: (
+    newItem: ExpenseResponse
+  ) => Promise<{ ok: boolean; message: string }>;
+  getExpense: () => void;
 }
 
 const initialState: ApiEstrellaState = {
@@ -37,6 +46,7 @@ const initialState: ApiEstrellaState = {
   services: [],
   lastClient: null,
   stock: [],
+  expense:[],
   isLoading: true,
 };
 
@@ -305,17 +315,22 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const addServiceClient = async(client: ClientResponse, newService: Service) => {
+  const addServiceClient = async (
+    client: ClientResponse,
+    newService: Service
+  ) => {
     try {
-
-      await estrellasApi.put(`/clients/${client.id}/service/${client.service.length}.json`, newService);
+      await estrellasApi.put(
+        `/clients/${client.id}/service/${client.service.length}.json`,
+        newService
+      );
 
       const clientNewService = {
         client,
-        newService
-      }
+        newService,
+      };
 
-      dispatch({ type: "add_service_client", payload: clientNewService })
+      dispatch({ type: "add_service_client", payload: clientNewService });
 
       return {
         ok: true,
@@ -328,6 +343,42 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         message:
           "Error en la carga del nuevo servicio, vuelva a intentarlo mas tarde",
       };
+    }
+  };
+
+  const getExpense = async () => {
+    try {
+      const expense = await estrellasApi.get<ExpenseResponse>("/expense.json");
+      const responseExpenseArray: ExpenseResponse[] = Object.entries(
+        expense.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+      dispatch({ type: "get_expense", payload: responseExpenseArray });
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  const addItemExpense = async (newItem: ExpenseResponse) => {
+    try {
+      const expense = await estrellasApi.get<ExpenseResponse>("/expense.json");
+
+      const responseExpenseArray: ExpenseResponse[] = Object.entries(
+        expense.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+
+      if (!responseExpenseArray.some((e) => e === newItem)) {
+        await estrellasApi.post(`expense.json`, newItem);
+        dispatch({ type: "add_item_expense", payload: newItem });
+        return {
+          ok: true,
+          message: "El item de gastos se ha cargado correctamente",
+        };
+      } else {
+        return { ok: false, message: "¡El item de gastos ya existente!" };
+      }
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, message: "Error al agregar servicio" };
     }
   };
 
@@ -349,6 +400,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         deleteStockItem,
         addItemStock,
         addServiceClient,
+        addItemExpense,
+        getExpense,
       }}
     >
       {children}

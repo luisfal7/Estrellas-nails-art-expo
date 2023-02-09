@@ -2,11 +2,11 @@
 
 export interface ExpenseResponse {
     id?:       string;
-    cantidad:  number;
-    costo:     number;
+    cantidad:  string;
+    costo:     string;
     fecha:     string;
     item:      string;
     marca:     string;
-    modelo:    number;
+    modelo:    string;
     proveedor: string;
 }

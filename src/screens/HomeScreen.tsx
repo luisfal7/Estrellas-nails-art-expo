@@ -148,7 +148,7 @@ export const HomeScreen = () => {
         {isLoading ? (
           <ActivityIndicator color={colors.primary} size={"large"} />
         ) : (
-          <View style={{ height: 380 }}>
+          <View style={{ height: 300 }}>
             <FlatList
               style={styles.listClient}
               showsVerticalScrollIndicator={false}

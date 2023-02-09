@@ -2,6 +2,7 @@ import { ModelResponse } from "../interfaces/ModelResponse";
 import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { StockResponse } from "../interfaces/StockResponse";
+import { ExpenseResponse } from "../interfaces/ExpenseResponse";
 
 export interface ApiEstrellaState {
   models: ModelResponse[];
@@ -9,6 +10,7 @@ export interface ApiEstrellaState {
   services: ServiceResponse[];
   lastClient: ClientResponse | null;
   stock: StockResponse[];
+  expense: ExpenseResponse[];
   isLoading: boolean;
 }
 
@@ -29,7 +31,9 @@ type ApiEstrellaAction =
   | {
       type: "add_service_client";
       payload: { client: ClientResponse; newService: Service };
-    };
+    }
+  | { type: "add_item_expense"; payload: ExpenseResponse }
+  | { type: "get_expense"; payload: ExpenseResponse[] };
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
@@ -125,6 +129,16 @@ export const apiEstrellaReducer = (
         ),
         isLoading: false,
       };
+
+    case "add_item_expense":
+      return {
+        ...state,
+        expense: [...state.expense, action.payload],
+        isLoading: false,
+      };
+
+    case "get_expense":
+      return { ...state, expense: action.payload, isLoading: false };
 
     default:
       return state;
