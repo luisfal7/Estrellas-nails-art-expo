@@ -2,7 +2,7 @@ import { createContext, useReducer, useEffect } from "react";
 import estrellasApi from "../api/estrellasApi";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
-import { ClientResponse } from "../interfaces/ClientResponse";
+import { ClientResponse, Service } from '../interfaces/ClientResponse';
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { StockResponse } from "../interfaces/StockResponse";
 
@@ -28,6 +28,7 @@ interface apiEstrellaContextProps {
   getStock: () => void;
   deleteStockItem: (selectItem: StockResponse) => void;
   addItemStock: (newItem: StockResponse) => Promise<{ ok: boolean }>;
+  addServiceClient:(client: ClientResponse, newService: Service) => Promise<{ ok: boolean; message: string }>;
 }
 
 const initialState: ApiEstrellaState = {
@@ -304,6 +305,32 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const addServiceClient = async(client: ClientResponse, newService: Service) => {
+    try {
+
+      await estrellasApi.put(`/clients/${client.id}/service/${client.service.length}.json`, newService);
+
+      const clientNewService = {
+        client,
+        newService
+      }
+
+      dispatch({ type: "add_service_client", payload: clientNewService })
+
+      return {
+        ok: true,
+        message: "el nuevo servicio se agregado correctamente",
+      };
+    } catch (error) {
+      console.log({ error });
+      return {
+        ok: false,
+        message:
+          "Error en la carga del nuevo servicio, vuelva a intentarlo mas tarde",
+      };
+    }
+  };
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -321,6 +348,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         getStock,
         deleteStockItem,
         addItemStock,
+        addServiceClient,
       }}
     >
       {children}

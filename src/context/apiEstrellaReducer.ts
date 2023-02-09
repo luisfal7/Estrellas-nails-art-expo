@@ -1,5 +1,5 @@
 import { ModelResponse } from "../interfaces/ModelResponse";
-import { ClientResponse } from "../interfaces/ClientResponse";
+import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { StockResponse } from "../interfaces/StockResponse";
 
@@ -25,7 +25,11 @@ type ApiEstrellaAction =
   | { type: "modif_service"; payload: ServiceResponse }
   | { type: "get_stock"; payload: StockResponse[] }
   | { type: "delete_stock_item"; payload: StockResponse }
-  | { type: "add_item_stock"; payload: StockResponse };
+  | { type: "add_item_stock"; payload: StockResponse }
+  | {
+      type: "add_service_client";
+      payload: { client: ClientResponse; newService: Service };
+    };
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
@@ -108,6 +112,17 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         stock: [...state.stock, action.payload],
+        isLoading: false,
+      };
+
+    case "add_service_client":
+      return {
+        ...state,
+        clients: state.clients.map((e) =>
+          e.id === action.payload.client.id
+            ? { ...e, service: [...e.service, action.payload.newService] }
+            : e
+        ),
         isLoading: false,
       };
 
