@@ -35,12 +35,14 @@ type ApiEstrellaAction =
   | { type: "add_item_expense"; payload: ExpenseResponse }
   | { type: "get_expense"; payload: ExpenseResponse[] }
   | { type: "delete_expense_item"; payload: ExpenseResponse }
+  | { type: "modif_expense", payload: ExpenseResponse }
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
   action: ApiEstrellaAction
 ): ApiEstrellaState => {
   switch (action.type) {
+
     case "get_models":
       return { ...state, models: action.payload, isLoading: false };
 
@@ -145,6 +147,14 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         expense: state.expense.filter((e) => e !== action.payload),
+        isLoading: false,
+      };
+    
+    case "modif_expense":
+      return {
+        ...state,
+        expense: state.expense.map((e) =>
+          e.id === action.payload.id ? action.payload : e),
         isLoading: false,
       };
 

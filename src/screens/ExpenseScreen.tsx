@@ -24,7 +24,7 @@ export const ExpenseScreen = () => {
 
   useEffect(() => {
     getExpense();
-  }, []);
+  }, [expense]);
 
   return (
     <View style={styles.container}>

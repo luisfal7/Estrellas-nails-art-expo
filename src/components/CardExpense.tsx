@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, Dimensions, Alert } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Button, Card, Icon } from "@rneui/themed";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
 import { ExpenseResponse } from '../interfaces/ExpenseResponse';
+import { ModalEditExpense } from "./ModalEditExpense";
 
 interface Props {
     expense: ExpenseResponse;
@@ -16,6 +17,12 @@ export const CardExpense = ({ expense, index }: Props) => {
 
   const { deleteExpenseItem } = useContext(ApiEstrellaContext);
   const { colors } = useTheme();
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible)
+  }
 
   const AlertDeleteExpense = () => {
     Alert.alert(
@@ -45,7 +52,7 @@ export const CardExpense = ({ expense, index }: Props) => {
             <Text style={styles.title}>
               {expense.marca} - {expense.item}
             </Text>
-            <Text style={styles.precio}>Modelo: {expense.modelo}</Text>
+            <Text style={{...styles.precio, fontSize:8}}>{expense.id}</Text>
             <Text style={styles.precio}>Fecha: {expense.fecha}</Text>
             <Text style={styles.precio}>Proveedor: {expense.proveedor}</Text>
             <Text style={styles.precio}>Cant.: {expense.cantidad}</Text>
@@ -53,7 +60,7 @@ export const CardExpense = ({ expense, index }: Props) => {
           </View>
           <View style={styles.containerBtn}>
           <Text style={styles.index}>{index + 1}</Text>
-            <Button radius={"md"} type="clear" onPress={() => {console.log('red')}}>
+            <Button radius={"md"} type="clear" onPress={() => setModalVisible(!modalVisible)}>
               <Icon name="create-outline" type="ionicon" color="gray" />
             </Button>
             <Button radius={"md"} type="clear" onPress={AlertDeleteExpense}>
@@ -62,6 +69,9 @@ export const CardExpense = ({ expense, index }: Props) => {
           </View>
         </View>
       </Card>
+      <View>
+        <ModalEditExpense item={expense} modalVisible={modalVisible} onToggle={toggleModal}/>
+      </View>
     </View>
   );
 };

@@ -39,6 +39,9 @@ interface apiEstrellaContextProps {
   ) => Promise<{ ok: boolean; message: string }>;
   getExpense: () => void;
   deleteExpenseItem: (selectItem: ExpenseResponse) => void;
+  modifExpense: (
+    selectItem: ExpenseResponse
+  ) => Promise<{ ok: boolean; message: string }>;
 }
 
 const initialState: ApiEstrellaState = {
@@ -395,6 +398,36 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const modifExpense = async (selectItem: ExpenseResponse) => {
+    try {
+      const expense = await estrellasApi.get<ExpenseResponse>("/expense.json");
+      const responseExpensesArray: ExpenseResponse[] = Object.entries(
+        expense.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+
+      const newItem = responseExpensesArray.some((e) => e === selectItem);
+
+      if (!newItem) {
+        await estrellasApi.put(
+          `/expense/${selectItem.id}.json`,
+          selectItem
+        );
+
+        dispatch({ type: "modif_expense", payload: selectItem });
+
+        return {
+          ok: true,
+          message: "El item de gasto se ha modificado correctamente",
+        };
+      } else {
+        return { ok: false, message: "¡El item de gasto ya existente!" };
+      }
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, message: "Error en la carga del servicio" };
+    }
+  };
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -416,6 +449,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         addItemExpense,
         getExpense,
         deleteExpenseItem,
+        modifExpense,
       }}
     >
       {children}
