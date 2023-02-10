@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, Dimensions, Alert } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Button, Card, Icon } from "@rneui/themed";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
 import { StockResponse } from "../interfaces/StockResponse";
+import { ModalEditStock } from "./ModalEditStock";
 
 interface Props {
   item: StockResponse;
@@ -16,6 +17,12 @@ export const CardStock = ({ item, index }: Props) => {
   const { deleteStockItem } = useContext(ApiEstrellaContext);
 
   const { colors } = useTheme();
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible)
+  }
 
   const AlertDeleteStock = () => {
     Alert.alert(
@@ -50,6 +57,7 @@ export const CardStock = ({ item, index }: Props) => {
             />
 
             <View style={styles.containerItem}>
+              <Text style={styles.id}>{item.id}</Text>
               <Text style={styles.cantidad}>Cant: {item.cantidad}</Text>
               <Text style={styles.title}>
                 {item.marca} {item.codigo} - {item.contenidoNeto}
@@ -62,7 +70,7 @@ export const CardStock = ({ item, index }: Props) => {
 
           <View style={styles.containerBtn}>
             <Text style={styles.index}>{index + 1}</Text>
-            <Button radius={"md"} type="clear" onPress={()=>{}}>
+            <Button radius={"md"} type="clear" onPress={toggleModal}>
               <Icon name="create-outline" type="ionicon" color="gray" />
             </Button>
             <Button radius={"md"} type="clear" onPress={AlertDeleteStock}>
@@ -71,6 +79,9 @@ export const CardStock = ({ item, index }: Props) => {
           </View>
         </View>
       </Card>
+      <View>
+        <ModalEditStock item={item} modalVisible={modalVisible} onToggle={toggleModal}/>
+      </View>
     </View>
   );
 };
@@ -104,6 +115,10 @@ const styles = StyleSheet.create({
   },
   containerItem: {
     paddingLeft: 10,
+  },
+  id: {
+    opacity: 0.5,
+    fontSize: 8,
   },
   cantidad: {
     opacity: 0.5,

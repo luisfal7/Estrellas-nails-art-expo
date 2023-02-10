@@ -4,7 +4,7 @@ import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
 import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
-import { StockResponse } from "../interfaces/StockResponse";
+import { StockResponse } from '../interfaces/StockResponse';
 import { ExpenseResponse } from "../interfaces/ExpenseResponse";
 
 interface apiEstrellaContextProps {
@@ -41,6 +41,9 @@ interface apiEstrellaContextProps {
   deleteExpenseItem: (selectItem: ExpenseResponse) => void;
   modifExpense: (
     selectItem: ExpenseResponse
+  ) => Promise<{ ok: boolean; message: string }>;
+  modifItemStock: (
+    selectItemStock: StockResponse
   ) => Promise<{ ok: boolean; message: string }>;
 }
 
@@ -428,6 +431,36 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const modifItemStock = async ( selectItemStock: StockResponse) => {
+    try {
+      const expense = await estrellasApi.get<StockResponse>("/expense.json");
+      const responseStockArray: StockResponse[] = Object.entries(
+        expense.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+
+      const newItem = responseStockArray.some((e) => e === selectItemStock);
+
+      if (!newItem) {
+        await estrellasApi.put(
+          `/stock/${selectItemStock.id}.json`,
+          selectItemStock
+        );
+
+        dispatch({ type: "modif_item_stock", payload: selectItemStock });
+
+        return {
+          ok: true,
+          message: "El item de stock se ha modificado correctamente",
+        };
+      } else {
+        return { ok: false, message: "¡El item de stock ya existente!" };
+      }
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, message: "Error en la carga del servicio" };
+    }
+  }
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -450,6 +483,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         getExpense,
         deleteExpenseItem,
         modifExpense,
+        modifItemStock
       }}
     >
       {children}

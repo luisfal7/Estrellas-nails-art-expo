@@ -1,7 +1,7 @@
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
-import { StockResponse } from "../interfaces/StockResponse";
+import { StockResponse } from '../interfaces/StockResponse';
 import { ExpenseResponse } from '../interfaces/ExpenseResponse';
 
 export interface ApiEstrellaState {
@@ -36,6 +36,7 @@ type ApiEstrellaAction =
   | { type: "get_expense"; payload: ExpenseResponse[] }
   | { type: "delete_expense_item"; payload: ExpenseResponse }
   | { type: "modif_expense", payload: ExpenseResponse }
+  | { type: "modif_item_stock", payload: StockResponse }
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
@@ -154,6 +155,14 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         expense: state.expense.map((e) =>
+          e.id === action.payload.id ? action.payload : e),
+        isLoading: false,
+      };
+
+    case "modif_item_stock":
+      return {
+        ...state,
+        stock: state.stock.map((e) =>
           e.id === action.payload.id ? action.payload : e),
         isLoading: false,
       };
