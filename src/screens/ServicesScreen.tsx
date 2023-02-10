@@ -24,7 +24,7 @@ export const ServicesScreen = () => {
 
   useEffect(() => {
     getServices();
-  }, []);
+  }, [services]);
 
   return (
     <View style={styles.container}>
