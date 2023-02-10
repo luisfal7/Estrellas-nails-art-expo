@@ -5,7 +5,7 @@ import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
 import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { StockResponse } from "../interfaces/StockResponse";
-import { ExpenseResponse } from '../interfaces/ExpenseResponse';
+import { ExpenseResponse } from "../interfaces/ExpenseResponse";
 
 interface apiEstrellaContextProps {
   models: ModelResponse[];
@@ -38,6 +38,7 @@ interface apiEstrellaContextProps {
     newItem: ExpenseResponse
   ) => Promise<{ ok: boolean; message: string }>;
   getExpense: () => void;
+  deleteExpenseItem: (selectItem: ExpenseResponse) => void;
 }
 
 const initialState: ApiEstrellaState = {
@@ -46,7 +47,7 @@ const initialState: ApiEstrellaState = {
   services: [],
   lastClient: null,
   stock: [],
-  expense:[],
+  expense: [],
   isLoading: true,
 };
 
@@ -382,6 +383,18 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const deleteExpenseItem = async (selectItem: ExpenseResponse) => {
+    try {
+      await estrellasApi.delete<ExpenseResponse>(
+        `/expense/${selectItem.id}.json`,
+        selectItem
+      );
+      dispatch({ type: "delete_expense_item", payload: selectItem });
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   return (
     <ApiEstrellaContext.Provider
       value={{
@@ -402,6 +415,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         addServiceClient,
         addItemExpense,
         getExpense,
+        deleteExpenseItem,
       }}
     >
       {children}

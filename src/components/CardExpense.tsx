@@ -14,8 +14,23 @@ const windowWidth = Dimensions.get("window").width;
 
 export const CardExpense = ({ expense, index }: Props) => {
 
-  //const {  } = useContext(ApiEstrellaContext);
+  const { deleteExpenseItem } = useContext(ApiEstrellaContext);
   const { colors } = useTheme();
+
+  const AlertDeleteExpense = () => {
+    Alert.alert(
+      "¿Desea borrar el item?",
+      'Al seleccionar "OK" el item se borrará permanentemente.',
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel",
+        },
+        { text: "OK", onPress: () => deleteExpenseItem(expense) },
+      ]
+    );
+  };
 
   return (
     <View>
@@ -28,15 +43,20 @@ export const CardExpense = ({ expense, index }: Props) => {
         <View style={styles.container}>
           <View style={styles.containerText}>
             <Text style={styles.title}>
-              {index + 1} - {expense.item}
+              {expense.marca} - {expense.item}
             </Text>
-            <Text style={styles.precio}>Precio actual: {expense.costo}$</Text>
+            <Text style={styles.precio}>Modelo: {expense.modelo}</Text>
+            <Text style={styles.precio}>Fecha: {expense.fecha}</Text>
+            <Text style={styles.precio}>Proveedor: {expense.proveedor}</Text>
+            <Text style={styles.precio}>Cant.: {expense.cantidad}</Text>
+            <Text style={styles.precio}>Costo: {expense.costo} $</Text>
           </View>
           <View style={styles.containerBtn}>
+          <Text style={styles.index}>{index + 1}</Text>
             <Button radius={"md"} type="clear" onPress={() => {console.log('red')}}>
               <Icon name="create-outline" type="ionicon" color="gray" />
             </Button>
-            <Button radius={"md"} type="clear" onPress={() => {console.log('blue')}}>
+            <Button radius={"md"} type="clear" onPress={AlertDeleteExpense}>
               <Icon name="trash-outline" type="ionicon" color="gray" />
             </Button>
           </View>
@@ -73,7 +93,7 @@ const styles = StyleSheet.create({
   title: {
     width: windowWidth * 0.65,
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 14,
   },
   precio: {
     justifyContent: "center",
@@ -82,5 +102,12 @@ const styles = StyleSheet.create({
   },
   containerBtn: {
     justifyContent: "space-between",
+  },
+  index: {
+    alignSelf: "center",
+    marginBottom: 5,
+    color: "gray",
+    borderBottomWidth: 1,
+    borderColor: "gray",
   },
 });

@@ -2,7 +2,7 @@ import { ModelResponse } from "../interfaces/ModelResponse";
 import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { StockResponse } from "../interfaces/StockResponse";
-import { ExpenseResponse } from "../interfaces/ExpenseResponse";
+import { ExpenseResponse } from '../interfaces/ExpenseResponse';
 
 export interface ApiEstrellaState {
   models: ModelResponse[];
@@ -33,7 +33,8 @@ type ApiEstrellaAction =
       payload: { client: ClientResponse; newService: Service };
     }
   | { type: "add_item_expense"; payload: ExpenseResponse }
-  | { type: "get_expense"; payload: ExpenseResponse[] };
+  | { type: "get_expense"; payload: ExpenseResponse[] }
+  | { type: "delete_expense_item"; payload: ExpenseResponse }
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
@@ -139,6 +140,13 @@ export const apiEstrellaReducer = (
 
     case "get_expense":
       return { ...state, expense: action.payload, isLoading: false };
+
+    case "delete_expense_item":
+      return {
+        ...state,
+        expense: state.expense.filter((e) => e !== action.payload),
+        isLoading: false,
+      };
 
     default:
       return state;
