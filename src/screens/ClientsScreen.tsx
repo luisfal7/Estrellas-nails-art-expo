@@ -22,7 +22,7 @@ export const ClientsScreen = () => {
 
   useEffect(() => {
     getClients();
-  }, []);
+  }, [clients]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -40,7 +40,7 @@ export const ClientsScreen = () => {
         <View>
           <FlatList
             data={clients}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => <CardClient client={item} />}
             ListHeaderComponent={
               <View
