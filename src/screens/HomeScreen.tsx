@@ -19,7 +19,7 @@ export const HomeScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
 
-  const { clients, lastClient, getClients, lastClientResponse, isLoading } =
+  const { clients, lastClient, getClients, isLoading } =
     useContext(ApiEstrellaContext);
 
   const servicesClient = clients
@@ -54,8 +54,7 @@ export const HomeScreen = () => {
 
   useEffect(() => {
     getClients();
-    lastClientResponse();
-  }, []);
+  }, [clients, lastClient]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -132,16 +131,15 @@ export const HomeScreen = () => {
         {isLoading ? (
           <ActivityIndicator color={colors.primary} size={"large"} />
         ) : (
-          <Text style={styles.client}>
+          <View>
             {lastClient ? (
-              <CardClient client={lastClient} />
-            ) : (
-              <Text style={styles.lastClientNotFound}>
-                Se ha eliminado el turno de la ultimo solicitud, actualice para
-                ver la ultima solicitud nuevamente.
+              <Text style={styles.client}>
+                <CardClient client={lastClient} />
               </Text>
+            ) : (
+              <ActivityIndicator color={colors.primary} size={"large"} />
             )}
-          </Text>
+          </View>
         )}
       </View>
       <View>
@@ -188,12 +186,12 @@ const styles = StyleSheet.create({
   },
   containerBtn: {
     flexDirection: "row",
-    flexWrap:"wrap",
+    flexWrap: "wrap",
     justifyContent: "center",
   },
-  btn:{
-    width:150,
-    margin:5
+  btn: {
+    width: 150,
+    margin: 5,
   },
   containerListHeader: {
     height: 20,
@@ -201,12 +199,6 @@ const styles = StyleSheet.create({
   },
   title: {
     alignSelf: "center",
-  },
-  lastClientNotFound: {
-    alignSelf: "center",
-    fontStyle: "italic",
-    fontSize: 12,
-    textDecorationLine: "underline",
   },
   client: {
     padding: 5,

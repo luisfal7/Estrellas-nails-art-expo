@@ -1,8 +1,8 @@
-import { createContext, useReducer, useEffect } from "react";
+import { createContext, useReducer, useState, useEffect } from "react";
 import estrellasApi from "../api/estrellasApi";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
-import { ClientResponse, Service } from "../interfaces/ClientResponse";
+import { ClientResponse, Service } from '../interfaces/ClientResponse';
 import { ServiceResponse } from "../interfaces/ServiceResponse";
 import { StockResponse } from '../interfaces/StockResponse';
 import { ExpenseResponse } from "../interfaces/ExpenseResponse";
@@ -26,7 +26,6 @@ interface apiEstrellaContextProps {
     selectService: ServiceResponse
   ) => Promise<{ ok: boolean; message: string }>;
   addModel: (pickImage: string) => Promise<{ ok: boolean; message: string }>;
-  lastClientResponse: () => Promise<void>;
   getStock: () => void;
   deleteStockItem: (selectItem: StockResponse) => void;
   addItemStock: (newItem: StockResponse) => Promise<{ ok: boolean }>;
@@ -88,12 +87,14 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const getClients = async () => {
     try {
-      const clients = await estrellasApi.get<ClientResponse>("/clients.json");
+      const clientsApi = await estrellasApi.get<ClientResponse>("/clients.json");
       const responseClientsArray: ClientResponse[] = Object.entries(
-        clients.data
+        clientsApi.data
       ).map(([id, obj]) => ({ id, ...obj }));
 
-      const clientsOrder = responseClientsArray.sort((a, b) => {
+      const lastClient = responseClientsArray.slice(responseClientsArray.length-1, responseClientsArray.length)[0]
+
+      const clientsOrderDate = responseClientsArray.sort((a, b) => {
         const fechaA = a.fecha.split("/");
         const diaA = parseInt(fechaA[0]);
         const mesA = parseInt(fechaA[1]) - 1;
@@ -120,7 +121,12 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         return 1;
       });
 
-      dispatch({ type: "get_clients", payload: clientsOrder });
+      const clients = {
+        clientsOrderDate,
+        lastClient
+      }
+
+      dispatch({ type: "get_clients", payload: clients });
     } catch (error) {
       console.log({ error });
     }
@@ -237,23 +243,6 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const lastClientResponse = async () => {
-    try {
-      const clients = await estrellasApi.get<ClientResponse>("/clients.json");
-      const responseClientsArray: ClientResponse[] = Object.entries(
-        clients.data
-      ).map(([id, obj]) => ({ id, ...obj }));
-
-      const lastClient = responseClientsArray.slice(
-        responseClientsArray.length - 1,
-        responseClientsArray.length
-      )[0];
-      dispatch({ type: "get_last_client", payload: lastClient });
-    } catch (error) {
-      console.log({ error });
-    }
-  };
-
   const getStock = async () => {
     try {
       const stock = await estrellasApi.get<StockResponse>("/stock.json");
@@ -279,14 +268,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const addItemStock = async (newItem: StockResponse) => {
     try {
-      const stock = await estrellasApi.get<StockResponse>("/stock.json");
-
-      const responseStockArray: StockResponse[] = Object.entries(
-        stock.data
-      ).map(([id, obj]) => ({ id, ...obj }));
-
       if (
-        !responseStockArray.some(
+        !state.stock.some(
           (e) =>
             e.categoria === newItem.categoria &&
             e.codigo === newItem.codigo &&
@@ -352,13 +335,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const addItemExpense = async (newItem: ExpenseResponse) => {
     try {
-      const expense = await estrellasApi.get<ExpenseResponse>("/expense.json");
 
-      const responseExpenseArray: ExpenseResponse[] = Object.entries(
-        expense.data
-      ).map(([id, obj]) => ({ id, ...obj }));
-
-      if (!responseExpenseArray.some((e) => e === newItem)) {
+      if (!state.expense.some((e) => e === newItem)) {
         await estrellasApi.post(`expense.json`, newItem);
         dispatch({ type: "add_item_expense", payload: newItem });
         return {
@@ -388,12 +366,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const modifExpense = async (selectItem: ExpenseResponse) => {
     try {
-      const expense = await estrellasApi.get<ExpenseResponse>("/expense.json");
-      const responseExpensesArray: ExpenseResponse[] = Object.entries(
-        expense.data
-      ).map(([id, obj]) => ({ id, ...obj }));
 
-      const newItem = responseExpensesArray.some((e) => e === selectItem);
+      const newItem = state.expense.some((e) => e === selectItem);
 
       if (!newItem) {
         await estrellasApi.put(
@@ -418,12 +392,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const modifItemStock = async ( selectItemStock: StockResponse) => {
     try {
-      const expense = await estrellasApi.get<StockResponse>("/expense.json");
-      const responseStockArray: StockResponse[] = Object.entries(
-        expense.data
-      ).map(([id, obj]) => ({ id, ...obj }));
 
-      const newItem = responseStockArray.some((e) => e === selectItemStock);
+      const newItem = state.stock.some((e) => e === selectItemStock);
 
       if (!newItem) {
         await estrellasApi.put(
@@ -444,7 +414,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
       console.log({ error });
       return { ok: false, message: "Error en la carga del servicio" };
     }
-  }
+  };
 
   return (
     <ApiEstrellaContext.Provider
@@ -459,7 +429,6 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         addService,
         modifService,
         addModel,
-        lastClientResponse,
         getStock,
         deleteStockItem,
         addItemStock,

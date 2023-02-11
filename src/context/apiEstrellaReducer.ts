@@ -1,8 +1,8 @@
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
-import { StockResponse } from '../interfaces/StockResponse';
-import { ExpenseResponse } from '../interfaces/ExpenseResponse';
+import { StockResponse } from "../interfaces/StockResponse";
+import { ExpenseResponse } from "../interfaces/ExpenseResponse";
 
 export interface ApiEstrellaState {
   models: ModelResponse[];
@@ -18,8 +18,13 @@ type ApiEstrellaAction =
   | { type: "get_models"; payload: ModelResponse[] }
   | { type: "delete_model"; payload: string }
   | { type: "add_model"; payload: ModelResponse }
-  | { type: "get_clients"; payload: ClientResponse[] }
-  | { type: "get_last_client"; payload: ClientResponse }
+  | {
+      type: "get_clients";
+      payload: {
+        clientsOrderDate: ClientResponse[];
+        lastClient: ClientResponse;
+      };
+    }
   | { type: "delete_client"; payload: string }
   | { type: "get_services"; payload: ServiceResponse[] }
   | { type: "add_service"; payload: ServiceResponse }
@@ -35,15 +40,14 @@ type ApiEstrellaAction =
   | { type: "add_item_expense"; payload: ExpenseResponse }
   | { type: "get_expense"; payload: ExpenseResponse[] }
   | { type: "delete_expense_item"; payload: ExpenseResponse }
-  | { type: "modif_expense", payload: ExpenseResponse }
-  | { type: "modif_item_stock", payload: StockResponse }
+  | { type: "modif_expense"; payload: ExpenseResponse }
+  | { type: "modif_item_stock"; payload: StockResponse };
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
   action: ApiEstrellaAction
 ): ApiEstrellaState => {
   switch (action.type) {
-
     case "get_models":
       return { ...state, models: action.payload, isLoading: false };
 
@@ -62,12 +66,10 @@ export const apiEstrellaReducer = (
       };
 
     case "get_clients":
-      return { ...state, clients: action.payload, isLoading: false };
-
-    case "get_last_client":
       return {
         ...state,
-        lastClient: action.payload,
+        clients: action.payload.clientsOrderDate,
+        lastClient: action.payload.lastClient,
         isLoading: false,
       };
 
@@ -150,12 +152,13 @@ export const apiEstrellaReducer = (
         expense: state.expense.filter((e) => e !== action.payload),
         isLoading: false,
       };
-    
+
     case "modif_expense":
       return {
         ...state,
         expense: state.expense.map((e) =>
-          e.id === action.payload.id ? action.payload : e),
+          e.id === action.payload.id ? action.payload : e
+        ),
         isLoading: false,
       };
 
@@ -163,7 +166,8 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         stock: state.stock.map((e) =>
-          e.id === action.payload.id ? action.payload : e),
+          e.id === action.payload.id ? action.payload : e
+        ),
         isLoading: false,
       };
 
