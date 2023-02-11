@@ -186,14 +186,7 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const modifService = async (selectService: ServiceResponse) => {
     try {
-      const services = await estrellasApi.get<ServiceResponse>(
-        "/services.json"
-      );
-      const responseServicesArray: ServiceResponse[] = Object.entries(
-        services.data
-      ).map(([id, obj]) => ({ id, ...obj }));
-
-      const newService = responseServicesArray.some(
+      const newService = state.services.some(
         (e) =>
           e.service.toUpperCase() === selectService.service.toUpperCase() &&
           e.precio === selectService.precio
