@@ -1,11 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, Dimensions, Alert } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Button, Card, Icon } from "@rneui/themed";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
@@ -22,13 +16,13 @@ const windowWidth = Dimensions.get("window").width;
 export const CardService = ({ service, index }: Props) => {
   const { deleteService } = useContext(ApiEstrellaContext);
 
-const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { colors } = useTheme();
 
   const toggleModal = () => {
-    setModalVisible(!modalVisible)
-  }
+    setModalVisible(!modalVisible);
+  };
 
   const AlertDeleteService = () => {
     Alert.alert(
@@ -48,13 +42,19 @@ const [modalVisible, setModalVisible] = useState(false);
   return (
     <View>
       <Card
-        containerStyle={{ ...styles.containerCard, backgroundColor: colors.card }}
+        containerStyle={{
+          ...styles.containerCard,
+          backgroundColor: colors.card,
+        }}
       >
         <View style={styles.container}>
           <View style={styles.containerText}>
-            <Text style={styles.title}>
-              {index + 1} - {service.service}
-            </Text>
+            <View>
+              <Text style={styles.id}>{service.id}</Text>
+              <Text style={styles.title}>
+                {index + 1} - {service.service}
+              </Text>
+            </View>
             <Text style={styles.precio}>Precio actual: {service.precio}$</Text>
           </View>
           <View style={styles.containerBtn}>
@@ -72,7 +72,11 @@ const [modalVisible, setModalVisible] = useState(false);
         </View>
       </Card>
       <View>
-        <ModalEditService service={service} modalVisible={modalVisible} onToggle={toggleModal}/>
+        <ModalEditService
+          service={service}
+          modalVisible={modalVisible}
+          onToggle={toggleModal}
+        />
       </View>
     </View>
   );
@@ -107,6 +111,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 12,
   },
+  id: {
+    fontSize: 8,
+    opacity: 0.5,
+  },
   precio: {
     justifyContent: "center",
     alignSelf: "flex-start",
@@ -115,5 +123,4 @@ const styles = StyleSheet.create({
   containerBtn: {
     justifyContent: "space-between",
   },
-
 });

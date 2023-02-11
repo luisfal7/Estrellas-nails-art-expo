@@ -1,4 +1,4 @@
-import { createContext, useReducer } from "react";
+import { createContext, useReducer, useEffect } from "react";
 import estrellasApi from "../api/estrellasApi";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
@@ -167,16 +167,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const addService = async (newService: ServiceResponse) => {
     try {
-      const services = await estrellasApi.get<ServiceResponse>(
-        "/services.json"
-      );
-
-      const responseServicesArray: ServiceResponse[] = Object.entries(
-        services.data
-      ).map(([id, obj]) => ({ id, ...obj }));
-
       if (
-        !responseServicesArray.some(
+        !state.services.some(
           (e) => e.service.toUpperCase() === newService.service.toUpperCase()
         )
       ) {
