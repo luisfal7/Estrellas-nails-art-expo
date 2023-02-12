@@ -19,7 +19,7 @@ export const HomeScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
 
-  const { clients, lastClient, getClients, isLoading } =
+  const { clients, lastClient, getClients, getExpense, expense, isLoading } =
     useContext(ApiEstrellaContext);
 
   const servicesClient = clients
@@ -27,7 +27,10 @@ export const HomeScreen = () => {
     .flat()
     .map((e) => parseInt(e.precio));
 
+  const expenseCosto = expense.map((e) => parseInt(e.costo))
+
   const servicesTotal = servicesClient.reduce((pv, cv) => pv + cv, 0);
+  const expenseTotal = expenseCosto.reduce((pv, cv) => pv + cv, 0);
 
   const listClientsFechaDate = clients.map((e) => ({
     ...e,
@@ -56,13 +59,17 @@ export const HomeScreen = () => {
     getClients();
   }, [clients, lastClient]);
 
+  useEffect(()=>{
+    getExpense();
+  },[])
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar animated={true} backgroundColor={"black"} />
       <View style={styles.containerData}>
         <CardData title="Ingresos Brutos" total={servicesTotal} />
-        <CardData title="Ingresos Neto" total={servicesTotal - 0} />
-        <CardData title="Gastos Totales" total={0} />
+        <CardData title="Ingresos Neto" total={servicesTotal - expenseTotal} />
+        <CardData title="Gastos Totales" total={expenseTotal} />
       </View>
       <View style={styles.containerBtn}>
         <Button
