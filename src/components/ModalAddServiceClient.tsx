@@ -25,7 +25,7 @@ export const ModalAddServiceClient = ({
   const [newService, setNewService] = useState<Service>();
 
   const servicesList = services
-    .map((e) => (client.service.some((d) => d?.id === e?.id) ? true : e))
+    .map((e) => (client?.service.some((d) => d?.id === e?.id) ? true : e))
     .filter((e) => e !== true) as ServiceResponse[];
 
   const alertAddService = async () => {
@@ -114,8 +114,8 @@ export const ModalAddServiceClient = ({
                   />
                   {servicesList.map((e) => (
                     <Picker.Item
-                      key={e.id}
-                      label={`${e.service}\nPrecio:${e.precio}`}
+                      key={e?.id}
+                      label={`${e?.service}\nPrecio:${e?.precio}`}
                       value={e}
                       style={{ fontSize: 14 }}
                     />

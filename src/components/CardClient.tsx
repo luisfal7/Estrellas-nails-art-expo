@@ -15,7 +15,7 @@ const windowWidth = Dimensions.get("window").width;
 export const CardClient = ({ client }: Props) => {
   const { colors } = useTheme();
 
-  const { deleteClient } = useContext(ApiEstrellaContext);
+  const { deleteClient, deleteServiceClient } = useContext(ApiEstrellaContext);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -53,7 +53,65 @@ export const CardClient = ({ client }: Props) => {
         {client?.service.map((e) => (
           <View style={styles.containerService} key={e?.id}>
             <Text style={styles.serviceTitle}>{e?.service}</Text>
-            <Text style={styles.servicePrecio}>{e?.precio}$</Text>
+            {(e?.id === "-NLa2pqZjnzx5PeHlcuT" ||
+              e?.id === "-NNMrmW-HcerSLAmqt24" ||
+              e?.id === "-NNMrupL-q15zOwfPiqr") && (
+              <View style={{ flexDirection: "row" }}>
+                <Button type="clear" size="sm" onPress={() => {}}>
+                  <Icon
+                    name="remove-outline"
+                    type="ionicon"
+                    color="gray"
+                    size={15}
+                  />
+                </Button>
+                <Text style={{ ...styles.servicePrecio, alignSelf: "center" }}>
+                  {e?.cantidad}
+                </Text>
+                <Button type="clear" size="sm" onPress={() => {}}>
+                  <Icon
+                    name="add-outline"
+                    type="ionicon"
+                    color="gray"
+                    size={15}
+                  />
+                </Button>
+              </View>
+            )}
+            <Text style={styles.servicePrecio}>
+              {e.cantidad
+                ? parseInt(e?.precio) * parseInt(e?.cantidad)
+                : e?.precio}
+              $
+            </Text>
+            <Button
+              type="clear"
+              size="sm"
+              onPress={() =>
+                Alert.alert(
+                  "¿Desea borrar este servicio del cliente?",
+                  'Al seleccionar "OK" el servicio del cliente se borrará permanentemente.',
+                  [
+                    {
+                      text: "Cancel",
+                      onPress: () => {},
+                      style: "cancel",
+                    },
+                    {
+                      text: "OK",
+                      onPress: () => deleteServiceClient(client, e),
+                    },
+                  ]
+                )
+              }
+            >
+              <Icon
+                name="close-outline"
+                type="ionicon"
+                color="gray"
+                size={15}
+              />
+            </Button>
           </View>
         ))}
         <View style={styles.footer}>
@@ -131,10 +189,10 @@ const styles = StyleSheet.create({
   },
   serviceTitle: {
     flex: 0.9,
-    fontSize: 12,
+    fontSize: 10,
   },
   servicePrecio: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "bold",
   },
   footer: {

@@ -9,7 +9,8 @@ export interface ClientResponse {
 }
 
 export interface Service {
-    id:      string;
-    precio:  string;
-    service: string | Date;
+    id:         string;
+    precio:     string;
+    service:    string | Date;
+    cantidad?:  string;
 }

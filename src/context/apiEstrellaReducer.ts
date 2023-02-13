@@ -35,13 +35,14 @@ type ApiEstrellaAction =
   | { type: "add_item_stock"; payload: StockResponse }
   | {
       type: "add_service_client";
-      payload: { client: ClientResponse; newService: Service };
+      payload: { client: ClientResponse; newService: Service }
     }
   | { type: "add_item_expense"; payload: ExpenseResponse }
   | { type: "get_expense"; payload: ExpenseResponse[] }
   | { type: "delete_expense_item"; payload: ExpenseResponse }
   | { type: "modif_expense"; payload: ExpenseResponse }
-  | { type: "modif_item_stock"; payload: StockResponse };
+  | { type: "modif_item_stock"; payload: StockResponse }
+  | { type: "delete_service_client", payload: {client: ClientResponse; selectService: Service} };
 
 export const apiEstrellaReducer = (
   state: ApiEstrellaState,
@@ -135,6 +136,17 @@ export const apiEstrellaReducer = (
         ),
         isLoading: false,
       };
+    
+    case "delete_service_client":
+      return {
+        ...state,
+        clients: state.clients.map((e) =>
+        e.id === action.payload.client.id
+          ? { ...e, service: e.service.filter((e) => e.id !== action.payload.selectService.id) }
+          : e
+      ), 
+      isLoading: false, 
+    };
 
     case "add_item_expense":
       return {

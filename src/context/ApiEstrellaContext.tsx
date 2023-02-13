@@ -2,9 +2,9 @@ import { createContext, useReducer, useState, useEffect } from "react";
 import estrellasApi from "../api/estrellasApi";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
-import { ClientResponse, Service } from '../interfaces/ClientResponse';
+import { ClientResponse, Service } from "../interfaces/ClientResponse";
 import { ServiceResponse } from "../interfaces/ServiceResponse";
-import { StockResponse } from '../interfaces/StockResponse';
+import { StockResponse } from "../interfaces/StockResponse";
 import { ExpenseResponse } from "../interfaces/ExpenseResponse";
 
 interface apiEstrellaContextProps {
@@ -33,6 +33,10 @@ interface apiEstrellaContextProps {
     client: ClientResponse,
     newService: Service
   ) => Promise<{ ok: boolean; message: string }>;
+  deleteServiceClient: (
+    client: ClientResponse,
+    selectService: Service
+  ) => void;
   addItemExpense: (
     newItem: ExpenseResponse
   ) => Promise<{ ok: boolean; message: string }>;
@@ -87,12 +91,17 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const getClients = async () => {
     try {
-      const clientsApi = await estrellasApi.get<ClientResponse>("/clients.json");
+      const clientsApi = await estrellasApi.get<ClientResponse>(
+        "/clients.json"
+      );
       const responseClientsArray: ClientResponse[] = Object.entries(
         clientsApi.data
       ).map(([id, obj]) => ({ id, ...obj }));
 
-      const lastClient = responseClientsArray.slice(responseClientsArray.length-1, responseClientsArray.length)[0]
+      const lastClient = responseClientsArray.slice(
+        responseClientsArray.length - 1,
+        responseClientsArray.length
+      )[0];
 
       const clientsOrderDate = responseClientsArray.sort((a, b) => {
         const fechaA = a.fecha.split("/");
@@ -123,8 +132,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
       const clients = {
         clientsOrderDate,
-        lastClient
-      }
+        lastClient,
+      };
 
       dispatch({ type: "get_clients", payload: clients });
     } catch (error) {
@@ -321,6 +330,30 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
+  const deleteServiceClient = async (
+    client: ClientResponse,
+    selectService: Service
+  ) => {
+    try {
+      const clientDeleteService = {
+        client,
+        selectService,
+      };
+
+      dispatch({ type: "delete_service_client", payload: clientDeleteService });
+      
+      const editServices = state.clients.filter(e => e.id === client.id)[0].service.filter(e => e.id !== selectService.id)
+
+      await estrellasApi.put(
+        `/clients/${client.id}/service.json`,
+        editServices
+      );
+
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   const getExpense = async () => {
     try {
       const expense = await estrellasApi.get<ExpenseResponse>("/expense.json");
@@ -335,7 +368,6 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const addItemExpense = async (newItem: ExpenseResponse) => {
     try {
-
       if (!state.expense.some((e) => e === newItem)) {
         await estrellasApi.post(`expense.json`, newItem);
         dispatch({ type: "add_item_expense", payload: newItem });
@@ -366,14 +398,10 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const modifExpense = async (selectItem: ExpenseResponse) => {
     try {
-
       const newItem = state.expense.some((e) => e === selectItem);
 
       if (!newItem) {
-        await estrellasApi.put(
-          `/expense/${selectItem.id}.json`,
-          selectItem
-        );
+        await estrellasApi.put(`/expense/${selectItem.id}.json`, selectItem);
 
         dispatch({ type: "modif_expense", payload: selectItem });
 
@@ -390,9 +418,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
     }
   };
 
-  const modifItemStock = async ( selectItemStock: StockResponse) => {
+  const modifItemStock = async (selectItemStock: StockResponse) => {
     try {
-
       const newItem = state.stock.some((e) => e === selectItemStock);
 
       if (!newItem) {
@@ -433,11 +460,12 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         deleteStockItem,
         addItemStock,
         addServiceClient,
+        deleteServiceClient,
         addItemExpense,
         getExpense,
         deleteExpenseItem,
         modifExpense,
-        modifItemStock
+        modifItemStock,
       }}
     >
       {children}
