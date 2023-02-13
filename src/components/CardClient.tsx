@@ -51,9 +51,9 @@ export const CardClient = ({ client }: Props) => {
         </View>
         <Card.Divider />
         {client?.service.map((e, index) => (
-          <View style={styles.containerService} key={index + 1}>
-            <Text style={styles.serviceTitle}>{e.service}</Text>
-            <Text style={styles.servicePrecio}>{e.precio}$</Text>
+          <View style={styles.containerService} key={index}>
+            <Text style={styles.serviceTitle} >{e.service}</Text>
+            <Text style={styles.servicePrecio} >{e.precio}$</Text>
           </View>
         ))}
         <View style={styles.footer}>

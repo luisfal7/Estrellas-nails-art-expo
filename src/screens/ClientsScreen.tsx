@@ -19,10 +19,10 @@ export const ClientsScreen = () => {
 
   const dimensionWidth = Dimensions.get("window").width;
   const dimensionHeight = Dimensions.get("window").height;
-
+  
   useEffect(() => {
     getClients();
-  }, [clients]);
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -40,7 +40,7 @@ export const ClientsScreen = () => {
         <View>
           <FlatList
             data={clients}
-            keyExtractor={(item, index) => index.toString()}
+            //keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => <CardClient client={item} />}
             ListHeaderComponent={
               <View

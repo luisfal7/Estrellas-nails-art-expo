@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, Modal, StyleSheet, Alert, Text, TextInput } from "react-native";
+import { View, Modal, StyleSheet, Alert, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Card, Button } from "@rneui/themed";
 import { useTheme } from "@react-navigation/native";
 import { ApiEstrellaContext } from "../context/ApiEstrellaContext";
-import { ClientResponse, Service } from '../interfaces/ClientResponse';
+import { ClientResponse, Service } from "../interfaces/ClientResponse";
+import { ServiceResponse } from "../interfaces/ServiceResponse";
 
 interface Props {
   client: ClientResponse;
@@ -23,6 +24,10 @@ export const ModalAddServiceClient = ({
 
   const [newService, setNewService] = useState<Service>();
 
+  const servicesList = services
+    .map((e) => (client.service.some((d) => d.id === e.id) ? true : e))
+    .filter((e) => e !== true) as ServiceResponse[];
+
   const alertAddService = async () => {
     Alert.alert(
       "¿Desea borrar el item?",
@@ -40,7 +45,10 @@ export const ModalAddServiceClient = ({
 
   const addService = async () => {
     try {
-      const { ok, message } = await addServiceClient(client, newService as Service);
+      const { ok, message } = await addServiceClient(
+        client,
+        newService as Service
+      );
       if (ok) {
         Alert.alert("Alerta", message);
         onToggle();
@@ -104,7 +112,7 @@ export const ModalAddServiceClient = ({
                     label="Seleccione el servicio nuevo"
                     style={{ fontSize: 14 }}
                   />
-                  {services.map((e) => (
+                  {servicesList.map((e) => (
                     <Picker.Item
                       key={e.id}
                       label={`${e.service}\nPrecio:${e.precio}`}
