@@ -50,10 +50,10 @@ export const CardClient = ({ client }: Props) => {
           </Card.Title>
         </View>
         <Card.Divider />
-        {client?.service.map((e, index) => (
-          <View style={styles.containerService} key={index}>
-            <Text style={styles.serviceTitle} >{e.service}</Text>
-            <Text style={styles.servicePrecio} >{e.precio}$</Text>
+        {client?.service.map((e) => (
+          <View style={styles.containerService} key={e?.id}>
+            <Text style={styles.serviceTitle}>{e?.service}</Text>
+            <Text style={styles.servicePrecio}>{e?.precio}$</Text>
           </View>
         ))}
         <View style={styles.footer}>

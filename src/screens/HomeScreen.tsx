@@ -23,9 +23,9 @@ export const HomeScreen = () => {
     useContext(ApiEstrellaContext);
 
   const servicesClient = clients
-    .map((e) => e.service)
+    .map((e) => e?.service)
     .flat()
-    .map((e) => parseInt(e.precio));
+    .map((e) => parseInt(e?.precio));
 
   const expenseCosto = expense.map((e) => parseInt(e.costo))
 

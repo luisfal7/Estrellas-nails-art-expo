@@ -25,7 +25,7 @@ export const ModalAddServiceClient = ({
   const [newService, setNewService] = useState<Service>();
 
   const servicesList = services
-    .map((e) => (client.service.some((d) => d.id === e.id) ? true : e))
+    .map((e) => (client.service.some((d) => d?.id === e?.id) ? true : e))
     .filter((e) => e !== true) as ServiceResponse[];
 
   const alertAddService = async () => {
@@ -92,10 +92,10 @@ export const ModalAddServiceClient = ({
                     flexDirection: "row",
                     justifyContent: "space-between",
                   }}
-                  key={e.id}
+                  key={e?.id}
                 >
-                  <Text style={styles.text}>{e.service}</Text>
-                  <Text style={styles.text}>{e.precio}</Text>
+                  <Text style={styles.text}>{e?.service}</Text>
+                  <Text style={styles.text}>{e?.precio}</Text>
                 </View>
               ))}
               <Text style={styles.titleService}>servicio a agregar</Text>

@@ -40,7 +40,7 @@ export const ClientsScreen = () => {
         <View>
           <FlatList
             data={clients}
-            //keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => item.id}
             renderItem={({ item }) => <CardClient client={item} />}
             ListHeaderComponent={
               <View
