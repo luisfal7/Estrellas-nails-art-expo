@@ -15,7 +15,7 @@ const windowWidth = Dimensions.get("window").width;
 export const CardClient = ({ client }: Props) => {
   const { colors } = useTheme();
 
-  const { deleteClient, deleteServiceClient } = useContext(ApiEstrellaContext);
+  const { deleteClient, deleteServiceClient, addQuantityServiceClient, minusQuantityServiceClient } = useContext(ApiEstrellaContext);
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -57,7 +57,7 @@ export const CardClient = ({ client }: Props) => {
               e?.id === "-NNMrmW-HcerSLAmqt24" ||
               e?.id === "-NNMrupL-q15zOwfPiqr") && (
               <View style={{ flexDirection: "row" }}>
-                <Button type="clear" size="sm" onPress={() => {}}>
+                <Button type="clear" size="sm" onPress={() => {minusQuantityServiceClient(client, e)}}>
                   <Icon
                     name="remove-outline"
                     type="ionicon"
@@ -68,7 +68,7 @@ export const CardClient = ({ client }: Props) => {
                 <Text style={{ ...styles.servicePrecio, alignSelf: "center" }}>
                   {e?.cantidad}
                 </Text>
-                <Button type="clear" size="sm" onPress={() => {}}>
+                <Button type="clear" size="sm" onPress={() => {addQuantityServiceClient(client, e)}}>
                   <Icon
                     name="add-outline"
                     type="ionicon"

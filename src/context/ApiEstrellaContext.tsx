@@ -33,7 +33,12 @@ interface apiEstrellaContextProps {
     client: ClientResponse,
     newService: Service
   ) => Promise<{ ok: boolean; message: string }>;
-  deleteServiceClient: (
+  deleteServiceClient: (client: ClientResponse, selectService: Service) => void;
+  addQuantityServiceClient: (
+    client: ClientResponse,
+    selectService: Service
+  ) => void;
+  minusQuantityServiceClient: (
     client: ClientResponse,
     selectService: Service
   ) => void;
@@ -341,14 +346,76 @@ export const ApiEstrellaProvider = ({ children }: any) => {
       };
 
       dispatch({ type: "delete_service_client", payload: clientDeleteService });
-      
-      const editServices = state.clients.filter(e => e.id === client.id)[0].service.filter(e => e.id !== selectService.id)
+
+      const editServices = state.clients
+        .filter((e) => e.id === client.id)[0]
+        .service.filter((e) => e.id !== selectService.id);
 
       await estrellasApi.put(
         `/clients/${client.id}/service.json`,
         editServices
       );
+    } catch (error) {
+      console.log({ error });
+    }
+  };
 
+  const addQuantityServiceClient = async (
+    client: ClientResponse,
+    selectService: Service
+  ) => {
+    try {
+      const clientService = {
+        client,
+        selectService,
+      };
+
+      const indexService = state.clients
+        .filter((e) => e.id === client.id)[0]
+        .service.map((e) => e.id)
+        .indexOf(selectService.id);
+
+      await estrellasApi.put(
+        `/clients/${client.id}/service/${indexService}.json`,
+        {
+          ...selectService,
+          cantidad: (parseInt(selectService.cantidad) + 1).toString(),
+        }
+      );
+
+      dispatch({ type: "add_quantity_service_client", payload: clientService });
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  const minusQuantityServiceClient = async (
+    client: ClientResponse,
+    selectService: Service
+  ) => {
+    try {
+      const clientService = {
+        client,
+        selectService,
+      };
+
+      const indexService = state.clients
+        .filter((e) => e.id === client.id)[0]
+        .service.map((e) => e.id)
+        .indexOf(selectService.id);
+
+      await estrellasApi.put(
+        `/clients/${client.id}/service/${indexService}.json`,
+        {
+          ...selectService,
+          cantidad: parseInt(selectService.cantidad) <= 1 ? String(1) : (parseInt(selectService.cantidad) - 1).toString(),
+        }
+      );
+
+      dispatch({
+        type: "minus_quantity_service_client",
+        payload: clientService,
+      });
     } catch (error) {
       console.log({ error });
     }
@@ -461,6 +528,8 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         addItemStock,
         addServiceClient,
         deleteServiceClient,
+        addQuantityServiceClient,
+        minusQuantityServiceClient,
         addItemExpense,
         getExpense,
         deleteExpenseItem,
