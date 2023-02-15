@@ -17,14 +17,10 @@ export const ExpenseScreen = () => {
 
   const { colors } = useTheme();
 
-  const { getExpense, expense, isLoading } = useContext(ApiEstrellaContext);
+  const { expense, isLoading } = useContext(ApiEstrellaContext);
 
   const dimensionWidth = Dimensions.get("window").width;
   const dimensionHeight = Dimensions.get("window").height;
-
-  useEffect(() => {
-    getExpense();
-  }, []);
 
   return (
     <View style={styles.container}>
