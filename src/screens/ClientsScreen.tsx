@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -15,14 +15,10 @@ import { CardClient } from "../components/CardClient";
 export const ClientsScreen = () => {
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
-  const { clients, getClients, isLoading } = useContext(ApiEstrellaContext);
+  const { clients, isLoading } = useContext(ApiEstrellaContext);
 
   const dimensionWidth = Dimensions.get("window").width;
   const dimensionHeight = Dimensions.get("window").height;
-  
-  useEffect(() => {
-    getClients();
-  }, []);
 
   return (
     <View style={{ flex: 1 }}>

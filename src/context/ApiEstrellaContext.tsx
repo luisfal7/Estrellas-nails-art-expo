@@ -572,8 +572,6 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   useEffect(() => {
     getClients();
-    getExpense();
-    getServices();
   }, []);
 
   return (
