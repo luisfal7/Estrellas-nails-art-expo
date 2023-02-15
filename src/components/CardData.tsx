@@ -6,7 +6,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface Props {
   title: string;
-  total: number;
+  total?: number;
   current?: number;
 }
 
@@ -35,7 +35,7 @@ export const CardData = ({ title, total, current }: Props) => {
               <Text style={styles.value}>*********</Text>
             ) : (
               <View>
-                <Text style={styles.value}>{total} $</Text>
+                {total && <Text style={styles.value}>{total} $</Text>}
                 {current && (
                   <Text style={styles.valueCurrent}>{current} $</Text>
                 )}
