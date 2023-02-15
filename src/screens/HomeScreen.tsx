@@ -34,6 +34,8 @@ export const HomeScreen = () => {
   const expenseCosto = expense.map((e) => parseInt(e.costo))
   const expenseTotal = expenseCosto.reduce((pv, cv) => pv + cv, 0);
 
+  console.log(servicesTotalClient, servicesLastClient)
+
   const listClientsFechaDate = clients.map((e) => ({
     ...e,
     fecha: new Date(

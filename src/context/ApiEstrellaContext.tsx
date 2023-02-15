@@ -152,11 +152,32 @@ export const ApiEstrellaProvider = ({ children }: any) => {
 
   const deleteClient = async (selectClient: ClientResponse) => {
     try {
-      const { id } = selectClient;
-      await estrellasApi.delete<ClientResponse>(
-        `/clients/${id}.json`,
-        dispatch({ type: "delete_client", payload: id })
+
+      const clientsApi = await estrellasApi.get<ClientResponse>(
+        "/clients.json"
       );
+      const responseClientsArray: ClientResponse[] = Object.entries(
+        clientsApi.data
+      ).map(([id, obj]) => ({ id, ...obj }));
+
+      let lastClient = responseClientsArray.slice(
+        responseClientsArray.length - 1,
+        responseClientsArray.length
+      )[0];
+
+      if(selectClient.id === lastClient.id){
+        lastClient = responseClientsArray[responseClientsArray.length - 2]
+      }
+
+      const selectClientDelete = {
+        selectClient,
+        lastClient
+      }
+
+      await estrellasApi.delete<ClientResponse>(
+        `/clients/${selectClient.id}.json`, selectClientDelete.selectClient.id
+        );
+      dispatch({ type: "delete_client", payload: selectClientDelete })
     } catch (error) {
       console.log({ error });
     }

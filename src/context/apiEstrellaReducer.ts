@@ -27,7 +27,7 @@ type ApiEstrellaAction =
         lastClient: ClientResponse;
       };
     }
-  | { type: "delete_client"; payload: string }
+  | { type: "delete_client"; payload: { selectClient: ClientResponse; lastClient: ClientResponse; } }
   | { type: "get_services"; payload: ServiceResponse[] }
   | { type: "add_service"; payload: ServiceResponse }
   | { type: "delete_service"; payload: string }
@@ -99,12 +99,12 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         lastClient:
-          state.lastClient?.id === action.payload ? null : state.lastClient,
-        clients: state.clients.filter((e) => e.id !== action.payload),
+          state.lastClient?.id === action.payload.selectClient.id ? action.payload.lastClient : state.lastClient,
+        clients: state.clients.filter((e) => e.id !== action.payload.selectClient.id),
         profitGroos:
           state.profitGroos -
           state.clients
-            .filter((e) => e.id === action.payload)[0]
+            .filter((e) => e.id === action.payload.selectClient.id)[0]
             .service.map((d) => d.precio)
             .reduce((pv, cv) => parseInt(pv) + parseInt(cv), 0),
         isLoading: false,
@@ -161,6 +161,16 @@ export const apiEstrellaReducer = (
             ? { ...e, service: [...e.service, action.payload.newService] }
             : e
         ),
+        lastClient:
+          state.lastClient?.id === action.payload.client.id
+            ? {
+                ...state.lastClient,
+                service: [
+                  ...state.lastClient.service,
+                  action.payload.newService,
+                ],
+              }
+            : state.lastClient,
         profitGroos:
           state.profitGroos + parseInt(action.payload.newService.precio),
         isLoading: false,
@@ -185,7 +195,7 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         clients: state.clients.map((e) =>
-          e.id === action.payload.client.id && action.payload.client.id !== state.lastClient?.id
+          e.id === action.payload.client.id
             ? {
                 ...e,
                 service: e.service.map((d) =>
@@ -240,7 +250,7 @@ export const apiEstrellaReducer = (
       return {
         ...state,
         clients: state.clients.map((e) =>
-          e.id === action.payload.client.id && action.payload.client.id !== state.lastClient?.id
+          e.id === action.payload.client.id
             ? {
                 ...e,
                 service: e.service.map((d) =>
@@ -302,6 +312,15 @@ export const apiEstrellaReducer = (
               }
             : e
         ),
+        lastClient:
+          state.lastClient?.id === action.payload.client.id
+            ? {
+                ...state.lastClient,
+                service: state.lastClient.service.filter(
+                  (e) => e.id !== action.payload.selectService.id
+                ),
+              }
+            : state.lastClient,
         profitGroos:
           state.profitGroos - parseInt(action.payload.selectService.precio),
         isLoading: false,
