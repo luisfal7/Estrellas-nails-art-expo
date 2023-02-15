@@ -1,4 +1,4 @@
-import { createContext, useReducer, useState, useEffect } from "react";
+import { createContext, useReducer, useEffect } from "react";
 import estrellasApi from "../api/estrellasApi";
 import { ModelResponse } from "../interfaces/ModelResponse";
 import { apiEstrellaReducer, ApiEstrellaState } from "./apiEstrellaReducer";
@@ -14,6 +14,8 @@ interface apiEstrellaContextProps {
   lastClient: ClientResponse | null;
   stock: StockResponse[];
   expense: ExpenseResponse[];
+  profitGroos: number;
+  profitCurrent: number;
   isLoading: boolean;
   getModels: () => void;
   deleteModel: (selectModel: ModelResponse) => void;
@@ -62,6 +64,8 @@ const initialState: ApiEstrellaState = {
   lastClient: null,
   stock: [],
   expense: [],
+  profitGroos: 0,
+  profitCurrent: 0,
   isLoading: true,
 };
 
@@ -375,15 +379,33 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         .service.map((e) => e.id)
         .indexOf(selectService.id);
 
-      await estrellasApi.put(
-        `/clients/${client.id}/service/${indexService}.json`,
-        {
-          ...selectService,
-          cantidad: (parseInt(selectService.cantidad) + 1).toString(),
+      const precio = () => {
+        switch (selectService.id) {
+          case "-NLa2pqZjnzx5PeHlcuT":
+            return parseInt(selectService.precio) + 200
+            
+          case "-NNMrmW-HcerSLAmqt24":
+            return parseInt(selectService.precio) + 200
+  
+          case "-NNMrupL-q15zOwfPiqr":
+            return parseInt(selectService.precio) + 100
+        
+          default:
+            return parseInt(selectService.precio)
         }
-      );
-
-      dispatch({ type: "add_quantity_service_client", payload: clientService });
+      }
+        
+       await estrellasApi.put(
+        `/clients/${client.id}/service/${indexService}.json`,         
+          {
+            ...selectService,
+            cantidad: (parseInt(selectService.cantidad) + 1).toString(),
+            precio: precio().toString()
+          }
+        );
+        
+      dispatch({ type: "add_quantity_service_client", payload: clientService })
+        
     } catch (error) {
       console.log({ error });
     }
@@ -404,11 +426,28 @@ export const ApiEstrellaProvider = ({ children }: any) => {
         .service.map((e) => e.id)
         .indexOf(selectService.id);
 
+      const precio = () => {
+        switch (selectService.id) {
+          case "-NLa2pqZjnzx5PeHlcuT":
+            return parseInt(selectService.precio) - 200
+            
+          case "-NNMrmW-HcerSLAmqt24":
+            return parseInt(selectService.precio) - 200
+  
+          case "-NNMrupL-q15zOwfPiqr":
+            return parseInt(selectService.precio) - 100
+        
+          default:
+            return parseInt(selectService.precio)
+        }
+      }
+
       await estrellasApi.put(
         `/clients/${client.id}/service/${indexService}.json`,
         {
           ...selectService,
           cantidad: parseInt(selectService.cantidad) <= 1 ? String(1) : (parseInt(selectService.cantidad) - 1).toString(),
+          precio: parseInt(selectService.cantidad) <= 1 ? selectService.precio : precio().toString()
         }
       );
 
@@ -509,6 +548,12 @@ export const ApiEstrellaProvider = ({ children }: any) => {
       return { ok: false, message: "Error en la carga del servicio" };
     }
   };
+
+  useEffect(() => {
+    getClients();
+    getExpense();
+    getServices();
+  }, []);
 
   return (
     <ApiEstrellaContext.Provider

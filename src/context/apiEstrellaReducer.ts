@@ -11,6 +11,8 @@ export interface ApiEstrellaState {
   lastClient: ClientResponse | null;
   stock: StockResponse[];
   expense: ExpenseResponse[];
+  profitGroos: number;
+  profitCurrent: number;
   isLoading: boolean;
 }
 
@@ -82,6 +84,14 @@ export const apiEstrellaReducer = (
         ...state,
         clients: action.payload.clientsOrderDate,
         lastClient: action.payload.lastClient,
+        profitGroos: [
+          ...action.payload.clientsOrderDate,
+          action.payload.lastClient,
+        ]
+          .map((e) => e.service)
+          .flat()
+          .map((d) => d.precio)
+          .reduce((pv, cv) => parseInt(pv) + parseInt(cv), 0),
         isLoading: false,
       };
 
@@ -91,6 +101,12 @@ export const apiEstrellaReducer = (
         lastClient:
           state.lastClient?.id === action.payload ? null : state.lastClient,
         clients: state.clients.filter((e) => e.id !== action.payload),
+        profitGroos:
+          state.profitGroos -
+          state.clients
+            .filter((e) => e.id === action.payload)[0]
+            .service.map((d) => d.precio)
+            .reduce((pv, cv) => parseInt(pv) + parseInt(cv), 0),
         isLoading: false,
       };
 
@@ -145,42 +161,131 @@ export const apiEstrellaReducer = (
             ? { ...e, service: [...e.service, action.payload.newService] }
             : e
         ),
+        profitGroos:
+          state.profitGroos + parseInt(action.payload.newService.precio),
         isLoading: false,
       };
 
     case "add_quantity_service_client":
+      const precio = () => {
+        switch (action.payload.selectService.id) {
+          case "-NLa2pqZjnzx5PeHlcuT":
+            return parseInt(action.payload.selectService.precio) + 200;
+
+          case "-NNMrmW-HcerSLAmqt24":
+            return parseInt(action.payload.selectService.precio) + 200;
+
+          case "-NNMrupL-q15zOwfPiqr":
+            return parseInt(action.payload.selectService.precio) + 100;
+
+          default:
+            return parseInt(action.payload.selectService.precio);
+        }
+      };
       return {
         ...state,
         clients: state.clients.map((e) =>
-          e.id === action.payload.client.id
+          e.id === action.payload.client.id && action.payload.client.id !== state.lastClient?.id
             ? {
                 ...e,
                 service: e.service.map((d) =>
                   d.id === action.payload.selectService.id
-                    ? { ...d, cantidad: (parseInt(d.cantidad) + 1).toString() }
+                    ? {
+                        ...d,
+                        cantidad: (parseInt(d.cantidad) + 1).toString(),
+                        precio: precio().toString(),
+                      }
                     : d
                 ),
               }
             : e
         ),
+        lastClient:
+          state.lastClient?.id === action.payload.client.id
+            ? {
+                ...state.lastClient,
+                service: state.lastClient.service.map((e) =>
+                  e.id === action.payload.selectService.id
+                    ? {
+                        ...e,
+                        cantidad: (parseInt(e.cantidad) + 1).toString(),
+                        precio: precio().toString(),
+                      }
+                    : e
+                ),
+              }
+            : state.lastClient,
+
+        profitGroos:
+          state.profitGroos + parseInt(action.payload.selectService.precio),
         isLoading: false,
       };
 
     case "minus_quantity_service_client":
+      const precioMinus = () => {
+        switch (action.payload.selectService.id) {
+          case "-NLa2pqZjnzx5PeHlcuT":
+            return parseInt(action.payload.selectService.precio) - 200;
+
+          case "-NNMrmW-HcerSLAmqt24":
+            return parseInt(action.payload.selectService.precio) - 200;
+
+          case "-NNMrupL-q15zOwfPiqr":
+            return parseInt(action.payload.selectService.precio) - 100;
+
+          default:
+            return parseInt(action.payload.selectService.precio);
+        }
+      };
       return {
         ...state,
         clients: state.clients.map((e) =>
-          e.id === action.payload.client.id
+          e.id === action.payload.client.id && action.payload.client.id !== state.lastClient?.id
             ? {
                 ...e,
                 service: e.service.map((d) =>
                   d.id === action.payload.selectService.id
-                    ? { ...d, cantidad: parseInt(d.cantidad) <= 1 ? String(1) : (parseInt(d.cantidad) - 1).toString() }
+                    ? {
+                        ...d,
+                        cantidad:
+                          parseInt(d.cantidad) <= 1
+                            ? String(1)
+                            : (parseInt(d.cantidad) - 1).toString(),
+                        precio:
+                          parseInt(d.cantidad) <= 1
+                            ? d.precio
+                            : precioMinus().toString(),
+                      }
                     : d
                 ),
               }
             : e
         ),
+        lastClient:
+          state.lastClient?.id === action.payload.client.id
+            ? {
+                ...state.lastClient,
+                service: state.lastClient.service.map((e) =>
+                  e.id === action.payload.selectService.id
+                    ? {
+                        ...e,
+                        cantidad:
+                          parseInt(e.cantidad) <= 1
+                            ? String(1)
+                            : (parseInt(e.cantidad) - 1).toString(),
+                        precio:
+                          parseInt(e.cantidad) <= 1
+                            ? e.precio
+                            : precioMinus().toString(),
+                      }
+                    : e
+                ),
+              }
+            : state.lastClient,
+        profitGroos:
+          parseInt(action.payload.selectService.cantidad) <= 1
+            ? state.profitGroos
+            : state.profitGroos - parseInt(action.payload.selectService.precio),
         isLoading: false,
       };
 
@@ -197,6 +302,8 @@ export const apiEstrellaReducer = (
               }
             : e
         ),
+        profitGroos:
+          state.profitGroos - parseInt(action.payload.selectService.precio),
         isLoading: false,
       };
 

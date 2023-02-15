@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { View, Modal, StyleSheet, Alert, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Card, Button } from "@rneui/themed";
@@ -19,7 +19,7 @@ export const ModalAddServiceClient = ({
   onToggle,
 }: Props) => {
   const { colors } = useTheme();
-  const { addServiceClient, services, getServices } =
+  const { addServiceClient, services } =
     useContext(ApiEstrellaContext);
 
   const [newService, setNewService] = useState<Service>();
@@ -59,10 +59,6 @@ export const ModalAddServiceClient = ({
       Alert.alert("Alerta", "Error en la carga del servicio");
     }
   };
-
-  useEffect(() => {
-    getServices();
-  }, []);
 
   return (
     <View>

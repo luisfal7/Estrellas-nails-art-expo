@@ -37,7 +37,7 @@ export const CardClient = ({ client }: Props) => {
       ]
     );
   };
-
+  
   return (
     <View>
       <Card
@@ -79,10 +79,7 @@ export const CardClient = ({ client }: Props) => {
               </View>
             )}
             <Text style={styles.servicePrecio}>
-              {e.cantidad
-                ? parseInt(e?.precio) * parseInt(e?.cantidad)
-                : e?.precio}
-              $
+              {e?.precio}$
             </Text>
             <Button
               type="clear"

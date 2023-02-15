@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -19,17 +19,19 @@ export const HomeScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
 
-  const { clients, lastClient, getClients, getExpense, expense, isLoading } =
-    useContext(ApiEstrellaContext);
+  const { clients, lastClient, expense, isLoading } =
+    useContext(ApiEstrellaContext); 
 
   const servicesClient = clients
-    .map((e) => e?.service)
+    .filter((e) => e.id !== lastClient?.id)
+    .map(d => d.service)
     .flat()
     .map((e) => parseInt(e?.precio));
 
+  const servicesTotalClient = servicesClient.reduce((pv, cv) => pv + cv, 0);
+  const servicesLastClient = lastClient?.service.map(e => parseInt(e.precio)).reduce((pv, cv) => pv + cv, 0);
+  const serviceTotalGroos = servicesTotalClient + servicesLastClient
   const expenseCosto = expense.map((e) => parseInt(e.costo))
-
-  const servicesTotal = servicesClient.reduce((pv, cv) => pv + cv, 0);
   const expenseTotal = expenseCosto.reduce((pv, cv) => pv + cv, 0);
 
   const listClientsFechaDate = clients.map((e) => ({
@@ -55,20 +57,12 @@ export const HomeScreen = () => {
     (e) => Date.parse(e.fecha) >= Date.parse(fechaHoy)
   );
 
-  useEffect(() => {
-    getClients();
-  }, [clients, lastClient]);
-
-  useEffect(()=>{
-    getExpense();
-  },[])
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar animated={true} backgroundColor={"black"} />
       <View style={styles.containerData}>
-        <CardData title="Ingresos Brutos" total={servicesTotal} />
-        <CardData title="Ingresos Neto" total={servicesTotal - expenseTotal} />
+        <CardData title="Ingresos Brutos" total={serviceTotalGroos} />
+        <CardData title="Ingresos Neto" total={expenseTotal} />
         <CardData title="Gastos Totales" total={expenseTotal} />
       </View>
       <View style={styles.containerBtn}>
