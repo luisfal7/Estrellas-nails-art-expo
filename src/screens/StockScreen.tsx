@@ -23,7 +23,7 @@ export const StockScreen = () => {
 
   useEffect(() => {
     getStock();
-  }, [stock]);
+  }, []);
 
   return (
     <View style={styles.container}>
