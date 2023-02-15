@@ -76,7 +76,7 @@ export const HomeScreen = () => {
       <StatusBar animated={true} backgroundColor={"black"} />
       <View style={styles.containerData}>
         <CardData title="Ingresos Brutos" total={serviceTotalGroos} current={profitDateNow} />
-        <CardData title="Ingresos Neto" total={expenseTotal} />
+        <CardData title="Ingresos Neto" total={expenseTotal} current={profitDateNow} />
         <CardData title="Gastos Totales" total={expenseTotal} />
       </View>
       <View style={styles.containerBtn}>

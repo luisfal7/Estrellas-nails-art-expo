@@ -49,10 +49,11 @@ export const CardExpense = ({ expense, index }: Props) => {
       >
         <View style={styles.container}>
           <View style={styles.containerText}>
-            <Text style={styles.title}>
-              {expense.marca} - {expense.item}
-            </Text>
             <Text style={{...styles.precio, fontSize:8}}>{expense.id}</Text>
+            <Text style={styles.title}>
+              {expense.marca} {expense.modelo}
+            </Text>
+            <Text style={styles.subtitle}>{expense.item}</Text>
             <Text style={styles.precio}>Fecha: {expense.fecha}</Text>
             <Text style={styles.precio}>Proveedor: {expense.proveedor}</Text>
             <Text style={styles.precio}>Cant.: {expense.cantidad}</Text>
@@ -101,9 +102,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    width: windowWidth * 0.65,
+    width: windowWidth * 0.6,
     fontWeight: "bold",
     fontSize: 14,
+  },
+  subtitle:{
+    width: windowWidth * 0.65,
+    //fontWeight: "bold",
+    //fontStyle: "italic",
+    fontSize: 12,
   },
   precio: {
     justifyContent: "center",
