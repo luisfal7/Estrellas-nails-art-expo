@@ -20,21 +20,23 @@ export const HomeScreen = () => {
   const { colors } = useTheme();
 
   const { clients, lastClient, expense, isLoading } =
-    useContext(ApiEstrellaContext); 
+    useContext(ApiEstrellaContext);
 
   const servicesClient = clients
     .filter((e) => e.id !== lastClient?.id)
-    .map(d => d.service)
+    .map((d) => d.service)
     .flat()
     .map((e) => parseInt(e?.precio));
 
   const servicesTotalClient = servicesClient.reduce((pv, cv) => pv + cv, 0);
-  const servicesLastClient = lastClient?.service.map(e => parseInt(e.precio)).reduce((pv, cv) => pv + cv, 0);
-  const serviceTotalGroos = servicesTotalClient + servicesLastClient
-  const expenseCosto = expense.map((e) => parseInt(e.costo))
+  const servicesLastClient = lastClient?.service
+    .map((e) => parseInt(e.precio))
+    .reduce((pv, cv) => pv + cv, 0);
+  const serviceTotalGroos = servicesTotalClient + servicesLastClient;
+  const expenseCosto = expense.map((e) => parseInt(e.costo));
   const expenseTotal = expenseCosto.reduce((pv, cv) => pv + cv, 0);
 
-  console.log(servicesTotalClient, servicesLastClient)
+  console.log(servicesTotalClient, servicesLastClient);
 
   const listClientsFechaDate = clients.map((e) => ({
     ...e,
@@ -59,11 +61,21 @@ export const HomeScreen = () => {
     (e) => Date.parse(e.fecha) >= Date.parse(fechaHoy)
   );
 
+  const listClientsServed = listClientsFechaDate.filter(
+    (e) => Date.parse(e.fecha) < Date.parse(fechaHoy)
+  );
+
+  const profitDateNow = listClientsServed
+    .map((e) => e.service)
+    .flat()
+    .map((d) => d.precio)
+    .reduce((pv, cv) => parseInt(pv) + parseInt(cv), 0);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar animated={true} backgroundColor={"black"} />
       <View style={styles.containerData}>
-        <CardData title="Ingresos Brutos" total={serviceTotalGroos} />
+        <CardData title="Ingresos Brutos" total={serviceTotalGroos} current={profitDateNow} />
         <CardData title="Ingresos Neto" total={expenseTotal} />
         <CardData title="Gastos Totales" total={expenseTotal} />
       </View>
